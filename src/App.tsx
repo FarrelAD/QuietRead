@@ -40,7 +40,7 @@ import '@ionic/react/css/palettes/high-contrast.always.css';
 /* Theme variables */
 import './theme/variables.css';
 import MyBooks from './pages/MyBooks';
-import ReadingNotes from './components/ReadingNotes';
+import ReadingNotes from './pages/ReadingNotes';
 
 setupIonicReact();
 
