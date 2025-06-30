@@ -6,6 +6,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { CameraComponent } from "../components/CameraComponent";
+import { BookInfo } from "../components/BookInfo";
 
 const Tab1: React.FC = () => {
   return (
@@ -17,6 +18,10 @@ const Tab1: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen className="ion-padding">
         <CameraComponent />
+
+        <hr />
+
+        <BookInfo />
       </IonContent>
     </IonPage>
   );
