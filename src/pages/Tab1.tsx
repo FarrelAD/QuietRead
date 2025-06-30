@@ -4,11 +4,8 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
 } from "@ionic/react";
+import { CameraComponent } from "../components/CameraComponent";
 
 const Tab1: React.FC = () => {
   return (
@@ -18,21 +15,8 @@ const Tab1: React.FC = () => {
           <IonTitle>Home</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">My Ionic</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-
-        <IonCard>
-          <img src="https://placebear.com/300/200" alt="Bear" />
-          <IonCardContent>
-            <IonCardHeader>
-              <IonCardTitle>Card title</IonCardTitle>
-            </IonCardHeader>
-          </IonCardContent>
-        </IonCard>
+      <IonContent fullscreen className="ion-padding">
+        <CameraComponent />
       </IonContent>
     </IonPage>
   );
