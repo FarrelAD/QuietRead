@@ -10,8 +10,7 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, triangle, square } from 'ionicons/icons';
-import Tab1 from './pages/Tab1';
+import { ellipse, square } from 'ionicons/icons';
 
 
 /* TailwindCSS */
