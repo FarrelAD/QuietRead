@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package io.github.farrelad.booknest;
 
 import com.getcapacitor.BridgeActivity;
 
