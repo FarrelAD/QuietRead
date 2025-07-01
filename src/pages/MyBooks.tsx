@@ -7,16 +7,8 @@ import {
 } from "@ionic/react";
 import { Camera, Plus, Search, Star } from "lucide-react";
 import { useState } from "react";
-
-interface Book {
-  title: string;
-  author: string;
-  cover: string;
-  isbn: string;
-  description: string;
-  pages: number;
-  publishedDate: string;
-}
+import Book from "../interfaces/book";
+import Note from "../interfaces/note";
 
 function MyBooks() {
   const [showAddBook, setShowAddBook] = useState(false);
@@ -30,7 +22,7 @@ function MyBooks() {
   const [bookPreview, setBookPreview] = useState<Book | null>(null);
   const [isLoadingBook, setIsLoadingBook] = useState(false);
 
-  const [books] = useState([
+  const [books] = useState<Book[]>([
     {
       id: 1,
       title: "The Great Gatsby",
@@ -38,7 +30,10 @@ function MyBooks() {
       cover:
         "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=300&fit=crop",
       isbn: "9780743273565",
+      description: "The Great Gatsby description",
       rating: 4,
+      pages: 180,
+      publishedDate: "1925-04",
       dateAdded: "2024-06-15",
       lastRead: "2024-06-28",
       isCurrentlyReading: true,
@@ -51,7 +46,10 @@ function MyBooks() {
       cover:
         "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=200&h=300&fit=crop",
       isbn: "9780061120084",
+      description: "To Kill a Mockingbird description",
       rating: 5,
+      pages: 384,
+      publishedDate: "1960-07",
       dateAdded: "2024-06-01",
       lastRead: "2024-06-20",
       isCurrentlyReading: false,
@@ -66,17 +64,16 @@ function MyBooks() {
       book.author.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const saveNote = async (noteData) => {
+  const saveNote = async (noteData: Note) => {
     // This would save to database/local storage
     console.log("Saving note:", noteData);
     return null;
   };
 
   const handleAddNote = () => {
-    console.log("ahahah");
-    if (newNote.trim() && noteTitle.trim()) {
-      const noteData = {
-        bookId: currentBook?.id,
+    if (currentBook && newNote.trim() && noteTitle.trim()) {
+      const noteData: Note = {
+        bookId: currentBook.id,
         title: noteTitle,
         content: newNote,
         dateCreated: new Date().toISOString().split("T")[0],
@@ -96,22 +93,27 @@ function MyBooks() {
     setIsLoadingBook(false);
   };
 
-  const fetchBookDetails = async (isbn) => {
+  const fetchBookDetails = async (isbn: string) => {
     // This would call book API (Google Books, OpenLibrary, etc.)
     console.log("Fetching book details for ISBN:", isbn);
     setIsLoadingBook(true);
 
     // Mock book data - replace with actual API call
     setTimeout(() => {
-      const mockBookData = {
+      const mockBookData: Book = {
         title: "The Great Gatsby",
         author: "F. Scott Fitzgerald",
-        cover:
-          "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=300&fit=crop",
+        cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=300&fit=crop",
         isbn: isbn,
         description: "A classic American novel set in the Jazz Age...",
         pages: 180,
         publishedDate: "1925",
+        id: 0,
+        rating: 0,
+        dateAdded: new Date().toISOString().split("T")[0],
+        lastRead: new Date().toISOString().split("T")[0],
+        isCurrentlyReading: false,
+        progress: 0
       };
       setBookPreview(mockBookData);
       setIsLoadingBook(false);
@@ -137,7 +139,7 @@ function MyBooks() {
     return null;
   };
 
-  const saveBook = async (bookData) => {
+  const saveBook = async (bookData: Book) => {
     // This would save to database/local storage
     console.log("Saving book:", bookData);
     return null;
