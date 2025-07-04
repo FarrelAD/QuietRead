@@ -21,9 +21,11 @@ function AddNewNote({
   const handleAddNote = () => {
     if (book && newNote.trim() && noteTitle.trim()) {
       const noteData: Note = {
+				id: Math.random(),
         bookId: book.id,
         title: noteTitle,
         content: newNote,
+				page: Math.random(),
         dateCreated: new Date().toISOString().split("T")[0],
       };
       saveNote(noteData);
