@@ -40,6 +40,7 @@ import '@ionic/react/css/palettes/high-contrast.always.css';
 import './theme/variables.css';
 import MyBooks from './pages/MyBooks';
 import ReadingNotes from './pages/ReadingNotes';
+import { AddNewNoteProvider } from './context/AddNewNoteContext';
 
 setupIonicReact();
 
@@ -48,15 +49,17 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
-          <Route exact path="/my-books">
-            <MyBooks />
-          </Route>
-          <Route exact path="/reading-notes">
-            <ReadingNotes />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/my-books" />
-          </Route>
+          <AddNewNoteProvider>
+            <Route exact path="/my-books">
+              <MyBooks />
+            </Route>
+            <Route exact path="/reading-notes">
+              <ReadingNotes />
+            </Route>
+            <Route exact path="/">
+              <Redirect to="/my-books" />
+            </Route>
+          </AddNewNoteProvider>
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           <IonTabButton tab="my-books" href="/my-books">

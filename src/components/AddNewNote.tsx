@@ -1,17 +1,19 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Note from "../interfaces/note";
 import Book from "../interfaces/book";
+import { AddNewNoteContext } from "../context/AddNewNoteContext";
 
-function AddNewNote({
-  book,
-  handleCloseModal,
-}: {
-  book: Book;
-  handleCloseModal: (modalType: string, state: boolean) => void;
-}) {
+function AddNewNote({ book }: { book: Book }) {
   const [newNote, setNewNote] = useState("");
   const [noteTitle, setNoteTitle] = useState("");
   const [, setShowAddNote] = useState(true);
+
+  const addNewNoteCtx = useContext(AddNewNoteContext);
+  if (!addNewNoteCtx) {
+    throw new Error("AppNote button must be used within AddNewNoteProvider");
+  }
+
+  const { toggleAddNewNote } = addNewNoteCtx;
 
   const saveNote = async (noteData: Note) => {
     console.log("Saving note:", noteData);
@@ -21,11 +23,11 @@ function AddNewNote({
   const handleAddNote = () => {
     if (book && newNote.trim() && noteTitle.trim()) {
       const noteData: Note = {
-				id: Math.random(),
+        id: Math.random(),
         bookId: book.id,
         title: noteTitle,
         content: newNote,
-				page: Math.random(),
+        page: Math.random(),
         dateCreated: new Date().toISOString().split("T")[0],
       };
       saveNote(noteData);
@@ -33,6 +35,13 @@ function AddNewNote({
       setNoteTitle("");
       setShowAddNote(false);
     }
+  };
+
+  const closeModal = () => {
+    setShowAddNote(false);
+    setNewNote("");
+    setNoteTitle("");
+		toggleAddNewNote();
   };
 
   return (
@@ -77,12 +86,7 @@ function AddNewNote({
 
           <div className="flex space-x-3">
             <button
-              onClick={() => {
-                setShowAddNote(false);
-                setNewNote("");
-                setNoteTitle("");
-                handleCloseModal("add-note", false);
-              }}
+              onClick={closeModal}
               className="flex-1 py-3! px-4! text-gray-600 border border-gray-200 rounded-xl! font-medium hover:bg-gray-50 transition-colors"
             >
               Cancel

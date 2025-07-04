@@ -6,14 +6,15 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { Plus, Search, Star } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import books from "../data/books";
 import AddNewBook from "../components/AddNewBook";
 import AddNewNote from "../components/AddNewNote";
+import { AddNewNoteContext } from "../context/AddNewNoteContext";
 
 function MyBooks() {
   const [showAddBook, setShowAddBook] = useState(false);
-  const [showAddNote, setShowAddNote] = useState(false);
+  const [, setShowAddNote] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const currentBook = books.find((book) => book.isCurrentlyReading);
@@ -33,6 +34,13 @@ function MyBooks() {
         break;
     }
   };
+
+  const addNewNoteCtx = useContext(AddNewNoteContext);
+  if (!addNewNoteCtx) {
+    throw new Error("AppNote button must be used within AddNewNoteProvider");
+  }
+
+  const { isNewNoteShow, toggleAddNewNote } = addNewNoteCtx;
 
   return (
     <IonPage>
@@ -84,7 +92,10 @@ function MyBooks() {
                       </div>
                     </div>
                     <button
-                      onClick={() => setShowAddNote(true)}
+                      onClick={() => {
+                        setShowAddNote(true);
+                        toggleAddNewNote();
+                      }}
                       className="bg-blue-500 text-white px-4! py-2! rounded-lg! text-sm font-medium hover:bg-blue-600 transition-colors"
                     >
                       Add Note
@@ -147,10 +158,9 @@ function MyBooks() {
 
           {showAddBook && <AddNewBook handleCloseModal={handleCloseModal} />}
 
-          {showAddNote && currentBook && (
+          {isNewNoteShow && currentBook && (
             <AddNewNote
               book={currentBook}
-              handleCloseModal={handleCloseModal}
             />
           )}
         </div>

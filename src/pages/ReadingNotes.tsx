@@ -6,14 +6,23 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { BookOpen, Calendar } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import books from "../data/books";
 import notes from "../data/notes";
+import { AddNewNoteContext } from "../context/AddNewNoteContext";
+import AddNewNote from "../components/AddNewNote";
 
 function ReadingNotes() {
-	const [, setShowAddNote] = useState(false);
+  const [, setShowAddNote] = useState(false);
 
   const currentBook = books.find((book) => book.isCurrentlyReading);
+
+  const addNewNoteCtx = useContext(AddNewNoteContext);
+  if (!addNewNoteCtx) {
+    throw new Error("AppNote button must be used within AddNewNoteProvider");
+  }
+
+  const { isNewNoteShow, toggleAddNewNote } = addNewNoteCtx;
 
   return (
     <IonPage>
@@ -28,7 +37,10 @@ function ReadingNotes() {
             <h2 className="text-xl font-bold text-gray-800">Reading Notes</h2>
             {currentBook && (
               <button
-                onClick={() => setShowAddNote(true)}
+                onClick={() => {
+                  setShowAddNote(true);
+                  toggleAddNewNote();
+                }}
                 className="bg-blue-500 text-white px-4! py-2! rounded-lg! text-sm font-medium hover:bg-blue-600 transition-colors"
               >
                 New Note
@@ -52,6 +64,12 @@ function ReadingNotes() {
                 </div>
               </div>
             </div>
+          )}
+
+          {isNewNoteShow && currentBook && (
+            <AddNewNote
+              book={currentBook}
+            />
           )}
 
           <div className="space-y-4">
