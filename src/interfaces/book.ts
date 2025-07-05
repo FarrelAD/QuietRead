@@ -1,15 +1,19 @@
 export default interface Book {
-    id: number;
+    id?: number;
     title: string;
-    author: string;
-    cover: string;
-    isbn: string;
+    authors: string[];
+    publisher: string;
+    publisedDate: Date;
     description: string;
-    rating: number;
-    pages: number;
-    publishedDate: string;
-    dateAdded: string;
-    lastRead: string;
-    isCurrentlyReading: boolean;
-    progress: number;
+    industryIdentifiers: {
+        type: "ISBN_10" | "ISBN_13";
+        identifier: string;
+    }[],
+    pageCount: number;
+    categories: string[];
+    imageLinks: { 
+        smallThumbnail: string; 
+        thumbnail: string 
+    };
+    language: string;
 }

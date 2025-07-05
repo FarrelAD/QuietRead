@@ -12,6 +12,7 @@ function AddNewBook({
   const [bookPreview, setBookPreview] = useState<Book | null>(null);
   const [scanResult, setScanResult] = useState("");
   const [isScanning, setIsScanning] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [isLoadingBook, setIsLoadingBook] = useState(false);
 
   const resetAddBookForm = () => {
@@ -41,28 +42,25 @@ function AddNewBook({
     console.log("Fetching book details for ISBN:", isbn);
     setIsLoadingBook(true);
 
-    setTimeout(() => {
-      const mockBookData: Book = {
-        title: "The Great Gatsby",
-        author: "F. Scott Fitzgerald",
-        cover:
-          "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=300&fit=crop",
-        isbn: isbn,
-        description: "A classic American novel set in the Jazz Age...",
-        pages: 180,
-        publishedDate: "1925",
-        id: 0,
-        rating: 0,
-        dateAdded: new Date().toISOString().split("T")[0],
-        lastRead: new Date().toISOString().split("T")[0],
-        isCurrentlyReading: false,
-        progress: 0,
-      };
-      setBookPreview(mockBookData);
-      setIsLoadingBook(false);
-    }, 1500);
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`
+      );
+      const data = await response.json();
+      console.log("data: ", data);
 
-    return null;
+      if (data.totalItems > 0) {
+        const volumeInfo: Book = data["items"][0]["volumeInfo"];
+        setBookPreview(volumeInfo);
+      } else {
+        setBookPreview(null);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoadingBook(false);
+      setHasSearched(true);
+    }
   };
 
   const handleManualISBNSubmit = () => {
@@ -92,9 +90,9 @@ function AddNewBook({
         </div>
 
         <section className="mb-6">
-          <h4 className="font-semibold text-gray-700 mb-3">
-            Scan ISBN Barcode
-          </h4>
+          <p className="font-medium text-gray-700 my-4 text-center">
+            Scan ISBN barcode
+          </p>
           <button
             onClick={scanISBN}
             disabled={isScanning || isLoadingBook}
@@ -126,22 +124,22 @@ function AddNewBook({
         </section>
 
         <section className="mb-6">
-          <h4 className="font-semibold text-gray-700 mb-3">
-            Or Enter ISBN Manually
-          </h4>
+          <p className="font-medium text-gray-700 text-center my-4">
+            or enter ISBN manually
+          </p>
           <div className="flex space-x-2">
             <input
               type="text"
               placeholder="Enter 10 or 13 digit ISBN"
               value={manualISBN}
               onChange={(e) => setManualISBN(e.target.value)}
-              className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-4 py-3 border border-gray-200 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               disabled={isScanning || isLoadingBook}
             />
             <button
               onClick={handleManualISBNSubmit}
               disabled={!manualISBN.trim() || isScanning || isLoadingBook}
-              className="px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
+              className="px-4! py-3! bg-gray-100 text-gray-700 rounded-r-xl! hover:bg-gray-200 transition-colors disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
             >
               <Search className="h-5 w-5" />
             </button>
@@ -160,12 +158,12 @@ function AddNewBook({
           </div>
         )}
 
-        {bookPreview && !isLoadingBook && (
+        {bookPreview && !isLoadingBook ? (
           <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-xl">
             <h4 className="font-semibold text-gray-700 mb-3">Book Preview</h4>
             <div className="flex space-x-4">
               <img
-                src={bookPreview.cover}
+                src={bookPreview.imageLinks.thumbnail}
                 alt={bookPreview.title}
                 className="w-16 h-24 object-cover rounded-lg shadow-sm"
               />
@@ -173,15 +171,21 @@ function AddNewBook({
                 <h5 className="font-semibold text-gray-800 mb-1">
                   {bookPreview.title}
                 </h5>
-                <p className="text-gray-600 text-sm mb-1">
-                  {bookPreview.author}
-                </p>
-                <p className="text-gray-500 text-xs mb-2">
-                  ISBN: {bookPreview.isbn}
-                </p>
-                {bookPreview.pages && (
+                {bookPreview.authors.map((author, index) => (
+                  <p key={index} className="text-gray-600 text-sm mb-1">
+                    {author}
+                  </p>
+                ))}
+                <ul className="text-gray-500 text-xs mb-2">
+                  {bookPreview.industryIdentifiers.map((idn, index) => (
+                    <li key={index}>
+                      {idn.type} - {idn.identifier}
+                    </li>
+                  ))}
+                </ul>
+                {bookPreview.pageCount && (
                   <p className="text-gray-500 text-xs">
-                    {bookPreview.pages} pages
+                    {bookPreview.pageCount} pages
                   </p>
                 )}
               </div>
@@ -192,6 +196,26 @@ function AddNewBook({
               </p>
             )}
           </div>
+        ) : (
+          hasSearched && (
+            <div className="flex items-center justify-center p-4">
+              <div className="flex items-center gap-4 bg-white rounded-lg shadow-md border border-gray-200 p-4 max-w-md">
+                <div className="flex-1">
+                  <h5 className="text-lg font-semibold text-gray-800 mb-1">
+                    Book Not Found
+                  </h5>
+                  <p className="text-sm text-gray-600">
+                    The book you're looking for doesn't exist.
+                  </p>
+                </div>
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                    <span className="text-red-500 text-sm font-bold">!</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
         )}
 
         <div className="flex space-x-3">
@@ -199,7 +223,7 @@ function AddNewBook({
             onClick={() => {
               setShowAddBook(false);
               resetAddBookForm();
-							handleCloseModal("add-book", false);
+              handleCloseModal("add-book", false);
             }}
             className="flex-1 py-3! px-4! text-gray-600 border border-gray-200 rounded-xl! font-medium hover:bg-gray-50 transition-colors"
           >
