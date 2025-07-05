@@ -5,7 +5,7 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { Plus, Search, Star } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { useContext, useState } from "react";
 import books from "../data/books";
 import AddNewBook from "../components/AddNewBook";
@@ -18,11 +18,15 @@ function MyBooks() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const currentBook = books.find((book) => book.isCurrentlyReading);
-  const filteredBooks = books.filter(
-    (book) =>
-      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredBooks = books.filter((book) => {
+    const titleMatch = book.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const authorMatch = book.authors?.some((author) =>
+      author.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    return titleMatch || authorMatch;
+  });
 
   const handleCloseModal = (modalType: string, state: boolean) => {
     switch (modalType) {
@@ -70,7 +74,7 @@ function MyBooks() {
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
                 <div className="flex items-start space-x-4">
                   <img
-                    src={currentBook.cover}
+                    src={currentBook.imageLinks.thumbnail}
                     alt={currentBook.title}
                     className="w-20 h-28 object-cover rounded-lg shadow-md"
                   />
@@ -78,7 +82,11 @@ function MyBooks() {
                     <h3 className="font-bold text-lg text-gray-800 mb-1">
                       {currentBook.title}
                     </h3>
-                    <p className="text-gray-600 mb-3">{currentBook.author}</p>
+                    {currentBook.authors.map((author, index) => (
+                      <p key={index} className="text-gray-600 mb-3">
+                        {author}
+                      </p>
+                    ))}
                     <div className="mb-3">
                       <div className="flex justify-between text-sm text-gray-600 mb-1">
                         <span>Progress</span>
@@ -115,7 +123,7 @@ function MyBooks() {
                   className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
                 >
                   <img
-                    src={book.cover}
+                    src={book.imageLinks.thumbnail}
                     alt={book.title}
                     className="w-full h-48 object-cover"
                   />
@@ -123,20 +131,12 @@ function MyBooks() {
                     <h3 className="font-semibold text-gray-800 mb-1 text-sm leading-tight">
                       {book.title}
                     </h3>
-                    <p className="text-gray-600 text-xs mb-2">{book.author}</p>
+                    {book.authors.map((author, index) => (
+                      <p key={index} className="text-gray-600 mb-3">
+                        {author}
+                      </p>
+                    ))}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-3 w-3 ${
-                              i < book.rating
-                                ? "text-yellow-400 fill-current"
-                                : "text-gray-300"
-                            }`}
-                          />
-                        ))}
-                      </div>
                       {book.progress < 100 && (
                         <span className="text-xs text-blue-600 font-medium">
                           {book.progress}%
@@ -158,11 +158,7 @@ function MyBooks() {
 
           {showAddBook && <AddNewBook handleCloseModal={handleCloseModal} />}
 
-          {isNewNoteShow && currentBook && (
-            <AddNewNote
-              book={currentBook}
-            />
-          )}
+          {isNewNoteShow && currentBook && <AddNewNote book={currentBook} />}
         </div>
       </IonContent>
     </IonPage>

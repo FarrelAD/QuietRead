@@ -52,7 +52,7 @@ function ReadingNotes() {
             <div className="bg-blue-50 rounded-xl p-4 mb-6 border border-blue-100">
               <div className="flex items-center space-x-3">
                 <img
-                  src={currentBook.cover}
+                  src={currentBook.imageLinks.smallThumbnail}
                   alt={currentBook.title}
                   className="w-12 h-16 object-cover rounded"
                 />
@@ -60,17 +60,17 @@ function ReadingNotes() {
                   <h3 className="font-semibold text-gray-800">
                     {currentBook.title}
                   </h3>
-                  <p className="text-gray-600 text-sm">{currentBook.author}</p>
+                  {currentBook.authors.map((author, index) => (
+                    <p key={index} className="text-gray-600 mb-3">
+                      {author}
+                    </p>
+                  ))}
                 </div>
               </div>
             </div>
           )}
 
-          {isNewNoteShow && currentBook && (
-            <AddNewNote
-              book={currentBook}
-            />
-          )}
+          {isNewNoteShow && currentBook && <AddNewNote book={currentBook} />}
 
           <div className="space-y-4">
             {notes
