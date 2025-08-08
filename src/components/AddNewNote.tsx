@@ -3,7 +3,13 @@ import Note from "../interfaces/note";
 import Book from "../interfaces/book";
 import { AddNewNoteContext } from "../context/AddNewNoteContext";
 
-function AddNewNote({ book }: { book: Book }) {
+type AddNewNoteProps = {
+  book: Book
+}
+
+export default function AddNewNote(props: AddNewNoteProps) {
+  const { book } = props;
+
   const [newNote, setNewNote] = useState("");
   const [noteTitle, setNoteTitle] = useState("");
   const [, setShowAddNote] = useState(true);
@@ -12,7 +18,6 @@ function AddNewNote({ book }: { book: Book }) {
   if (!addNewNoteCtx) {
     throw new Error("AppNote button must be used within AddNewNoteProvider");
   }
-
   const { toggleAddNewNote } = addNewNoteCtx;
 
   const saveNote = async (noteData: Note) => {
@@ -24,7 +29,7 @@ function AddNewNote({ book }: { book: Book }) {
     if (book && newNote.trim() && noteTitle.trim()) {
       const noteData: Note = {
         id: Math.random(),
-        bookId: book.id,
+        bookId: book.id!,
         title: noteTitle,
         content: newNote,
         page: Math.random(),
@@ -41,7 +46,7 @@ function AddNewNote({ book }: { book: Book }) {
     setShowAddNote(false);
     setNewNote("");
     setNoteTitle("");
-		toggleAddNewNote();
+    toggleAddNewNote();
   };
 
   return (
@@ -53,7 +58,7 @@ function AddNewNote({ book }: { book: Book }) {
           <div className="bg-gray-50 rounded-xl p-4 mb-4">
             <div className="flex items-center space-x-3">
               <img
-                src={book.cover}
+                src={book.imageLinks.smallThumbnail}
                 alt={book.title}
                 className="w-10 h-14 object-cover rounded"
               />
@@ -61,7 +66,11 @@ function AddNewNote({ book }: { book: Book }) {
                 <h4 className="font-medium text-gray-800 text-sm">
                   {book.title}
                 </h4>
-                <p className="text-gray-600 text-xs">{book.author}</p>
+                {book.authors.map((author, index) => (
+                  <p key={index} className="text-gray-600 mb-3">
+                    {author}
+                  </p>
+                ))}
               </div>
             </div>
           </div>
@@ -103,5 +112,3 @@ function AddNewNote({ book }: { book: Book }) {
     </div>
   );
 }
-
-export default AddNewNote;

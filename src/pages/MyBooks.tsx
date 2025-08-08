@@ -11,8 +11,10 @@ import books from "../data/books";
 import AddNewBook from "../components/AddNewBook";
 import AddNewNote from "../components/AddNewNote";
 import { AddNewNoteContext } from "../context/AddNewNoteContext";
+import CurrentReadingBook from "../components/CurrentReadingBook";
+import { BigBookCard } from "../components/cards/BookCard";
 
-function MyBooks() {
+export default function MyBooks() {
   const [showAddBook, setShowAddBook] = useState(false);
   const [, setShowAddNote] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,12 +45,11 @@ function MyBooks() {
   if (!addNewNoteCtx) {
     throw new Error("AppNote button must be used within AddNewNoteProvider");
   }
-
   const { isNewNoteShow, toggleAddNewNote } = addNewNoteCtx;
 
   return (
     <IonPage>
-      <IonHeader className="px-4!">
+      <IonHeader>
         <IonToolbar>
           <IonTitle>BookNest</IonTitle>
         </IonToolbar>
@@ -67,84 +68,18 @@ function MyBooks() {
           </div>
 
           {currentBook && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">
-                Currently Reading
-              </h2>
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-                <div className="flex items-start space-x-4">
-                  <img
-                    src={currentBook.imageLinks.thumbnail}
-                    alt={currentBook.title}
-                    className="w-20 h-28 object-cover rounded-lg shadow-md"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg text-gray-800 mb-1">
-                      {currentBook.title}
-                    </h3>
-                    {currentBook.authors.map((author, index) => (
-                      <p key={index} className="text-gray-600 mb-3">
-                        {author}
-                      </p>
-                    ))}
-                    <div className="mb-3">
-                      <div className="flex justify-between text-sm text-gray-600 mb-1">
-                        <span>Progress</span>
-                        <span>{currentBook.progress}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${currentBook.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setShowAddNote(true);
-                        toggleAddNewNote();
-                      }}
-                      className="bg-blue-500 text-white px-4! py-2! rounded-lg! text-sm font-medium hover:bg-blue-600 transition-colors"
-                    >
-                      Add Note
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <CurrentReadingBook
+              book={currentBook}
+              setShowAddNote={setShowAddNote}
+              toggleAddNewNote={toggleAddNewNote}
+            />
           )}
 
           <section className="mb-6">
             <h2 className="text-xl font-bold mb-4 text-gray-800">My Library</h2>
             <div className="grid grid-cols-2 gap-4">
-              {filteredBooks.map((book) => (
-                <div
-                  key={book.id}
-                  className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
-                >
-                  <img
-                    src={book.imageLinks.thumbnail}
-                    alt={book.title}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-800 mb-1 text-sm leading-tight">
-                      {book.title}
-                    </h3>
-                    {book.authors.map((author, index) => (
-                      <p key={index} className="text-gray-600 mb-3">
-                        {author}
-                      </p>
-                    ))}
-                    <div className="flex items-center justify-between">
-                      {book.progress < 100 && (
-                        <span className="text-xs text-blue-600 font-medium">
-                          {book.progress}%
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
+              {filteredBooks.map((book, index) => (
+                <BigBookCard key={index} book={book} />
               ))}
             </div>
           </section>
@@ -157,12 +92,9 @@ function MyBooks() {
           </button>
 
           {showAddBook && <AddNewBook handleCloseModal={handleCloseModal} />}
-
           {isNewNoteShow && currentBook && <AddNewNote book={currentBook} />}
         </div>
       </IonContent>
     </IonPage>
   );
 }
-
-export default MyBooks;

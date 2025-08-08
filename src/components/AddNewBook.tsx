@@ -1,13 +1,17 @@
 import { Camera, Search } from "lucide-react";
 import { useState } from "react";
 import Book from "../interfaces/book";
+import { Capacitor } from "@capacitor/core";
+import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
+import { PreviewBookCard } from "./cards/BookCard";
 
-function AddNewBook({
-  handleCloseModal,
-}: {
+type AddNewBookProps = {
   handleCloseModal: (modalType: string, state: boolean) => void;
-}) {
-  const [, setShowAddBook] = useState(true);
+};
+
+export default function AddNewBook(props: AddNewBookProps) {
+  const { handleCloseModal } = props;
+
   const [manualISBN, setManualISBN] = useState("");
   const [bookPreview, setBookPreview] = useState<Book | null>(null);
   const [scanResult, setScanResult] = useState("");
@@ -23,10 +27,36 @@ function AddNewBook({
     setIsLoadingBook(false);
   };
 
+  const fetchBookDetails = async (isbn: string) => {
+    console.log("Fetching book details for ISBN:", isbn);
+    setIsLoadingBook(true);
+
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`
+      );
+      const data = await response.json();
+
+      if (data.totalItems > 0) {
+        const volumeInfo: Book = data["items"][0]["volumeInfo"];
+        setBookPreview(volumeInfo);
+      } else {
+        setBookPreview(null);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An uxpected error happen when try to fetch book details");
+    } finally {
+      setIsLoadingBook(false);
+      setHasSearched(true);
+    }
+  };
+
   const scanISBN = async () => {
     setIsScanning(true);
     console.log("Starting ISBN scan...");
 
+    // Simulate real scanning
     setTimeout(() => {
       const mockISBN = "9780743273565";
       setScanResult(mockISBN);
@@ -38,48 +68,24 @@ function AddNewBook({
     return null;
   };
 
-  const fetchBookDetails = async (isbn: string) => {
-    console.log("Fetching book details for ISBN:", isbn);
-    setIsLoadingBook(true);
-
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`
-      );
-      const data = await response.json();
-      console.log("data: ", data);
-
-      if (data.totalItems > 0) {
-        const volumeInfo: Book = data["items"][0]["volumeInfo"];
-        setBookPreview(volumeInfo);
-      } else {
-        setBookPreview(null);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoadingBook(false);
-      setHasSearched(true);
+  const handleSaveBook = async () => {
+    if (!bookPreview) {
+      alert("Sorry, your scanned book is empty!");
+      return;
     }
-  };
 
-  const handleManualISBNSubmit = () => {
-    if (manualISBN.trim()) {
-      fetchBookDetails(manualISBN.trim());
+    console.log("Saving book:", bookPreview);
+
+    console.log("capacitor platform: ");
+    console.log(Capacitor.getPlatform());
+
+    if (Capacitor.getPlatform() === "web") {
+      const sqlite = new SQLiteConnection(CapacitorSQLite);
+      await sqlite.initWebStore();
     }
-  };
 
-  const saveBook = async (bookData: Book) => {
-    console.log("Saving book:", bookData);
-    return null;
-  };
-
-  const handleAddBookSubmit = async () => {
-    if (bookPreview) {
-      await saveBook(bookPreview);
-      setShowAddBook(false);
-      resetAddBookForm();
-    }
+    alert("Saving book finish!");
+    resetAddBookForm();
   };
 
   return (
@@ -132,14 +138,18 @@ function AddNewBook({
               type="text"
               placeholder="Enter 10 or 13 digit ISBN"
               value={manualISBN}
-              onChange={(e) => setManualISBN(e.target.value)}
+              onChange={(e) => setManualISBN(e.target.value.trim())}
               className="flex-1 px-4 py-3 border border-gray-200 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               disabled={isScanning || isLoadingBook}
             />
             <button
-              onClick={handleManualISBNSubmit}
-              disabled={!manualISBN.trim() || isScanning || isLoadingBook}
-              className="px-4! py-3! bg-gray-100 text-gray-700 rounded-r-xl! hover:bg-gray-200 transition-colors disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
+              onClick={() => fetchBookDetails(manualISBN)}
+              disabled={!manualISBN || isScanning || isLoadingBook}
+              className={
+                !manualISBN || isScanning || isLoadingBook
+                  ? "px-4! py-3! bg-gray-100 text-gray-700 rounded-r-xl! hover:bg-gray-200 transition-colors disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  : "px-4! py-3! bg-blue-500 text-white  rounded-r-xl! font-medium hover:bg-blue-600 transition-colors"
+              }
             >
               <Search className="h-5 w-5" />
             </button>
@@ -159,43 +169,7 @@ function AddNewBook({
         )}
 
         {bookPreview && !isLoadingBook ? (
-          <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-xl">
-            <h4 className="font-semibold text-gray-700 mb-3">Book Preview</h4>
-            <div className="flex space-x-4">
-              <img
-                src={bookPreview.imageLinks.thumbnail}
-                alt={bookPreview.title}
-                className="w-16 h-24 object-cover rounded-lg shadow-sm"
-              />
-              <div className="flex-1">
-                <h5 className="font-semibold text-gray-800 mb-1">
-                  {bookPreview.title}
-                </h5>
-                {bookPreview.authors.map((author, index) => (
-                  <p key={index} className="text-gray-600 text-sm mb-1">
-                    {author}
-                  </p>
-                ))}
-                <ul className="text-gray-500 text-xs mb-2">
-                  {bookPreview.industryIdentifiers.map((idn, index) => (
-                    <li key={index}>
-                      {idn.type} - {idn.identifier}
-                    </li>
-                  ))}
-                </ul>
-                {bookPreview.pageCount && (
-                  <p className="text-gray-500 text-xs">
-                    {bookPreview.pageCount} pages
-                  </p>
-                )}
-              </div>
-            </div>
-            {bookPreview.description && (
-              <p className="text-gray-600 text-sm mt-3 leading-relaxed">
-                {bookPreview.description.substring(0, 150)}...
-              </p>
-            )}
-          </div>
+          <PreviewBookCard book={bookPreview} />
         ) : (
           hasSearched && (
             <div className="flex items-center justify-center p-4">
@@ -221,7 +195,6 @@ function AddNewBook({
         <div className="flex space-x-3">
           <button
             onClick={() => {
-              setShowAddBook(false);
               resetAddBookForm();
               handleCloseModal("add-book", false);
             }}
@@ -230,7 +203,7 @@ function AddNewBook({
             Cancel
           </button>
           <button
-            onClick={handleAddBookSubmit}
+            onClick={handleSaveBook}
             disabled={!bookPreview || isLoadingBook}
             className="flex-1 py-3! px-4! bg-blue-500 text-white rounded-xl! font-medium hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
@@ -241,5 +214,3 @@ function AddNewBook({
     </div>
   );
 }
-
-export default AddNewBook;
