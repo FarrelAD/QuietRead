@@ -5,14 +5,15 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { BookOpen, Calendar } from "lucide-react";
 import { useContext, useState } from "react";
 import books from "../data/books";
 import notes from "../data/notes";
 import { AddNewNoteContext } from "../context/AddNewNoteContext";
 import AddNewNote from "../components/AddNewNote";
+import { MediumBookCard } from "../components/cards/BookCard";
+import { NoteCard } from "../components/cards/NoteCard";
 
-function ReadingNotes() {
+export default function ReadingNotes() {
   const [, setShowAddNote] = useState(false);
 
   const currentBook = books.find((book) => book.isCurrentlyReading);
@@ -21,12 +22,11 @@ function ReadingNotes() {
   if (!addNewNoteCtx) {
     throw new Error("AppNote button must be used within AddNewNoteProvider");
   }
-
   const { isNewNoteShow, toggleAddNewNote } = addNewNoteCtx;
 
   return (
     <IonPage>
-      <IonHeader className="px-4!">
+      <IonHeader>
         <IonToolbar>
           <IonTitle>Reading Notes</IonTitle>
         </IonToolbar>
@@ -48,73 +48,20 @@ function ReadingNotes() {
             )}
           </div>
 
-          {currentBook && (
-            <div className="bg-blue-50 rounded-xl p-4 mb-6 border border-blue-100">
-              <div className="flex items-center space-x-3">
-                <img
-                  src={currentBook.imageLinks.smallThumbnail}
-                  alt={currentBook.title}
-                  className="w-12 h-16 object-cover rounded"
-                />
-                <div>
-                  <h3 className="font-semibold text-gray-800">
-                    {currentBook.title}
-                  </h3>
-                  {currentBook.authors.map((author, index) => (
-                    <p key={index} className="text-gray-600 mb-3">
-                      {author}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
+          {currentBook && <MediumBookCard book={currentBook} />}
 
           {isNewNoteShow && currentBook && <AddNewNote book={currentBook} />}
 
-          <div className="space-y-4">
+          <section className="space-y-4">
             {notes
               .filter((note) => !currentBook || note.bookId === currentBook.id)
-              .map((note) => {
+              .map((note, index) => {
                 const book = books.find((b) => b.id === note.bookId);
-                return (
-                  <div
-                    key={note.id}
-                    className="bg-white rounded-xl p-5 shadow-sm border border-gray-100"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="font-semibold text-gray-800">
-                        {note.title}
-                      </h3>
-                      <div className="flex items-center space-x-2 text-xs text-gray-500">
-                        <Calendar className="h-3 w-3" />
-                        <span>{note.dateCreated}</span>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 text-sm mb-3 leading-relaxed">
-                      {note.content}
-                    </p>
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                      <div className="flex items-center space-x-2">
-                        <BookOpen className="h-4 w-4 text-gray-400" />
-                        <span className="text-xs text-gray-600">
-                          {book?.title}
-                        </span>
-                      </div>
-                      {note.page && (
-                        <span className="text-xs text-gray-500">
-                          Page {note.page}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
+                return <NoteCard key={index} note={note} book={book!} /> ;
               })}
-          </div>
+          </section>
         </div>
       </IonContent>
     </IonPage>
   );
 }
-
-export default ReadingNotes;
