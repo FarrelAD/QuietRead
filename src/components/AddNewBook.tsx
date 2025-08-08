@@ -3,7 +3,7 @@ import { useState } from "react";
 import Book from "../interfaces/book";
 import { Capacitor } from "@capacitor/core";
 import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
-import { PreviewBookCard } from "./cards/BookCard";
+import { NotFoundBookCard, PreviewBookCard } from "./cards/BookCard";
 
 type AddNewBookProps = {
   handleCloseModal: (modalType: string, state: boolean) => void;
@@ -171,25 +171,7 @@ export default function AddNewBook(props: AddNewBookProps) {
         {bookPreview && !isLoadingBook ? (
           <PreviewBookCard book={bookPreview} />
         ) : (
-          hasSearched && (
-            <div className="flex items-center justify-center p-4">
-              <div className="flex items-center gap-4 bg-white rounded-lg shadow-md border border-gray-200 p-4 max-w-md">
-                <div className="flex-1">
-                  <h5 className="text-lg font-semibold text-gray-800 mb-1">
-                    Book Not Found
-                  </h5>
-                  <p className="text-sm text-gray-600">
-                    The book you're looking for doesn't exist.
-                  </p>
-                </div>
-                <div className="flex-shrink-0">
-                  <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
-                    <span className="text-red-500 text-sm font-bold">!</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
+          hasSearched && <NotFoundBookCard />
         )}
 
         <div className="flex space-x-3">
