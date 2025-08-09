@@ -1,19 +1,17 @@
 import { Camera, Search } from "lucide-react";
 import { useState } from "react";
-import Book from "../interfaces/book";
+import { Book, BookType } from "../models/book";
 import { NotFoundBookCard, PreviewBookCard } from "./cards/BookCard";
 import { useSQLite } from "../context/SQLiteContext";
 import { getCurrentLocalDateTime } from "../helpers/DateFormat";
 
-type AddNewBookProps = {
+export default function AddNewBook(props: {
   handleCloseModal: (modalType: string, state: boolean) => void;
-};
-
-export default function AddNewBook(props: AddNewBookProps) {
+}) {
   const { handleCloseModal } = props;
 
   const [manualISBN, setManualISBN] = useState("");
-  const [bookPreview, setBookPreview] = useState<Book | null>(null);
+  const [bookPreview, setBookPreview] = useState<BookType | null>(null);
   const [scanResult, setScanResult] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -40,7 +38,11 @@ export default function AddNewBook(props: AddNewBookProps) {
       const data = await response.json();
 
       if (data.totalItems > 0) {
-        const volumeInfo: Book = data["items"][0]["volumeInfo"];
+        console.log(
+          `data raw: ${JSON.stringify(data["items"][0]["volumeInfo"])}`
+        );
+        const volumeInfo = Book.fromJson(data["items"][0]["volumeInfo"]);
+        console.log(`volume info: ${volumeInfo}`);
 
         // Ensure imageLinks exists before modifying
         if (volumeInfo.imageLinks) {
@@ -53,7 +55,7 @@ export default function AddNewBook(props: AddNewBookProps) {
           volumeInfo.imageLinks.thumbnail =
             thumbnail?.replace(/^http:\/\//i, "https://") ?? thumbnail;
         }
-        setBookPreview(volumeInfo as Book);
+        setBookPreview(volumeInfo as BookType);
       } else {
         setBookPreview(null);
       }
@@ -82,35 +84,76 @@ export default function AddNewBook(props: AddNewBookProps) {
     return null;
   };
 
+  /**
+   * Save book and its authors to SQLite in a single transaction.
+   * Rolls back if any step fails to keep data consistent.
+   */
   const handleSaveBook = async () => {
-    const insertQuery = `INSERT INTO books (
-      title,
-      date_added,
-      publisher,
-      published_date,
-      category,
-      description,
-      page_count,
-      language,
-      small_thumbnail,
-      thumbnail
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    const bindValues: any[] = [
-      bookPreview?.title,
-      getCurrentLocalDateTime(),
-      bookPreview?.publisher,
-      bookPreview?.publishedDate,
-      bookPreview?.categories.join(","),
-      bookPreview?.description,
-      bookPreview?.pageCount,
-      bookPreview?.language,
-      bookPreview?.imageLinks.smallThumbnail,
-      bookPreview?.imageLinks.thumbnail,
-    ];
-    await db?.run(insertQuery, bindValues);
-    
-    alert("Success to store book to personal library!");
-    resetAddBookForm();
+    try {
+      // Insert to books table first
+      const bookSQLresult = await db?.run(
+        `INSERT INTO books (
+          title,
+          date_added,
+          publisher,
+          published_date,
+          category,
+          description,
+          page_count,
+          language,
+          small_thumbnail,
+          thumbnail
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          bookPreview?.title,
+          getCurrentLocalDateTime(),
+          bookPreview?.publisher,
+          bookPreview?.publishedDate,
+          bookPreview?.categories.join(","),
+          bookPreview?.description,
+          bookPreview?.pageCount,
+          bookPreview?.language,
+          bookPreview?.imageLinks.smallThumbnail,
+          bookPreview?.imageLinks.thumbnail,
+        ]
+      );
+
+      const bookId = bookSQLresult?.changes?.lastId;
+      if (!bookId) throw new Error("Failed to insert book");
+
+      // and then, insert new book author
+      for (const author of bookPreview?.authors || []) {
+        const result = await db?.run(
+          `INSERT OR IGNORE INTO authors (name) VALUES (?)`,
+          [author]
+        );
+
+        let authorId = result?.changes?.lastId;
+        if (!authorId) {
+          const existing = await db?.query(
+            `SELECT id FROM authors WHERE name = ?`,
+            [author]
+          );
+          authorId = existing?.values?.[0]?.id;
+        }
+
+        if (!authorId) throw new Error(`No ID found for author: ${author}`);
+
+        await db?.run(
+          `INSERT INTO book_authors (
+            book_id,
+            author_id
+          ) VALUES (?, ?)`,
+          [bookId, authorId]
+        );
+      }
+
+      alert("Success to store book to personal library!");
+      resetAddBookForm();
+    } catch (error: any) {
+      console.error("Error saving book:", error);
+      alert("Failed to store book. Nothing was saved.");
+    }
   };
 
   return (
