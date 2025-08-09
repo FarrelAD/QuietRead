@@ -1,9 +1,9 @@
 import { Camera, Search } from "lucide-react";
 import { useState } from "react";
 import Book from "../interfaces/book";
-import { Capacitor } from "@capacitor/core";
-import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
 import { NotFoundBookCard, PreviewBookCard } from "./cards/BookCard";
+import { useSQLite } from "../context/SQLiteContext";
+import { getCurrentLocalDateTime } from "../helpers/DateFormat";
 
 type AddNewBookProps = {
   handleCloseModal: (modalType: string, state: boolean) => void;
@@ -18,6 +18,8 @@ export default function AddNewBook(props: AddNewBookProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [isLoadingBook, setIsLoadingBook] = useState(false);
+
+  const { db } = useSQLite();
 
   const resetAddBookForm = () => {
     setManualISBN("");
@@ -39,7 +41,19 @@ export default function AddNewBook(props: AddNewBookProps) {
 
       if (data.totalItems > 0) {
         const volumeInfo: Book = data["items"][0]["volumeInfo"];
-        setBookPreview(volumeInfo);
+
+        // Ensure imageLinks exists before modifying
+        if (volumeInfo.imageLinks) {
+          const { smallThumbnail, thumbnail } = volumeInfo.imageLinks;
+
+          volumeInfo.imageLinks.smallThumbnail =
+            smallThumbnail?.replace(/^http:\/\//i, "https://") ??
+            smallThumbnail;
+
+          volumeInfo.imageLinks.thumbnail =
+            thumbnail?.replace(/^http:\/\//i, "https://") ?? thumbnail;
+        }
+        setBookPreview(volumeInfo as Book);
       } else {
         setBookPreview(null);
       }
@@ -69,22 +83,33 @@ export default function AddNewBook(props: AddNewBookProps) {
   };
 
   const handleSaveBook = async () => {
-    if (!bookPreview) {
-      alert("Sorry, your scanned book is empty!");
-      return;
-    }
-
-    console.log("Saving book:", bookPreview);
-
-    console.log("capacitor platform: ");
-    console.log(Capacitor.getPlatform());
-
-    if (Capacitor.getPlatform() === "web") {
-      const sqlite = new SQLiteConnection(CapacitorSQLite);
-      await sqlite.initWebStore();
-    }
-
-    alert("Saving book finish!");
+    const insertQuery = `INSERT INTO books (
+      title,
+      date_added,
+      publisher,
+      published_date,
+      category,
+      description,
+      page_count,
+      language,
+      small_thumbnail,
+      thumbnail
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const bindValues: any[] = [
+      bookPreview?.title,
+      getCurrentLocalDateTime(),
+      bookPreview?.publisher,
+      bookPreview?.publishedDate,
+      bookPreview?.categories.join(","),
+      bookPreview?.description,
+      bookPreview?.pageCount,
+      bookPreview?.language,
+      bookPreview?.imageLinks.smallThumbnail,
+      bookPreview?.imageLinks.thumbnail,
+    ];
+    await db?.run(insertQuery, bindValues);
+    
+    alert("Success to store book to personal library!");
     resetAddBookForm();
   };
 
