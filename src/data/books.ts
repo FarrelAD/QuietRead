@@ -11,9 +11,9 @@ const books: Book[] = [
       "A mysterious American millionaire tries to recapture the sweetheart of his youth, which results in tragedy.",
     imageLinks: {
       thumbnail:
-        "http://books.google.com/books/content?id=fIlQDwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
+        "https://books.google.com/books/content?id=fIlQDwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
       smallThumbnail:
-        "http://books.google.com/books/content?id=fIlQDwAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api",
+        "https://books.google.com/books/content?id=fIlQDwAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api",
     },
     industryIdentifiers: [
       {
@@ -43,9 +43,9 @@ const books: Book[] = [
       "Harper Lee's Pulitzer Prize-winning masterwork of honor and injustice in the deep South -- and the heroism of one man in the face of blind and violent hatred One of the best-loved stories of all time, To Kill a Mockingbird has been translated into more than forty languages, sold more than thirty million copies worldwide, served as the basis of an enormously popular motion picture, and was voted one of the best novels of the twentieth century by librarians across the country. A gripping, heart-wrenching, and wholly remarkable tale of coming-of-age in a South poisoned by virulent prejudice, it views a world of great beauty and savage inequities through the eyes of a young girl, as her father -- a crusading local lawyer -- risks everything to defend a black man unjustly accused of a terrible crime.",
     imageLinks: {
       thumbnail:
-        "http://books.google.com/books/content?id=ncuX8p2xLIUC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+        "https://books.google.com/books/content?id=ncuX8p2xLIUC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
       smallThumbnail:
-        "http://books.google.com/books/content?id=ncuX8p2xLIUC&printsec=frontcover&img=1&zoom=5&source=gbs_api",
+        "https://books.google.com/books/content?id=ncuX8p2xLIUC&printsec=frontcover&img=1&zoom=5&source=gbs_api",
     },
     industryIdentifiers: [
       {
