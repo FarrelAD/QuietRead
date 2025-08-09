@@ -107,43 +107,49 @@ export const SQLiteProvider = (props: SQLiteProviderProps) => {
       if (!isDbOpen.result) return;
 
       await db.execute(`
+        -- 1. Books table
         CREATE TABLE IF NOT EXISTS books (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          title VARCHAR(255) NOT NULL,
+          title TEXT NOT NULL,
           date_added DATETIME NOT NULL,
           last_read DATETIME,
-          publisher VARCHAR(100) NOT NULL,
+          publisher TEXT NOT NULL,
           published_date DATE NOT NULL,
-          category TEXT NOT NULL,               -- will support multi categories in 1 book
+          category TEXT NOT NULL, -- comma-separated
           description TEXT NOT NULL,
           page_count INTEGER NOT NULL,
           progress INTEGER NOT NULL DEFAULT 0,
-          is_currently_reading BOOLEAN NOT NULL DEFAULT FALSE,
-          language VARCHAR(10) NOT NULL,
-          small_thumbnail VARCHAR(2083),
-          thumbnail VARCHAR(2083)
+          is_currently_reading INTEGER NOT NULL DEFAULT 0, -- 0 = false, 1 = true
+          language TEXT NOT NULL,
+          small_thumbnail TEXT,
+          thumbnail TEXT,
+          isbn_10 TEXT,
+          isbn_13 TEXT
         );
 
+        -- 2. Authors table
+        CREATE TABLE IF NOT EXISTS authors (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL UNIQUE
+        );
+
+        -- 3. Join table for many-to-many relationship
         CREATE TABLE IF NOT EXISTS book_authors (
           book_id INTEGER NOT NULL,
-          author VARCHAR(100) NOT NULL,
-          FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
+          author_id INTEGER NOT NULL,
+          PRIMARY KEY (book_id, author_id),
+          FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+          FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
         );
 
-        CREATE TABLE IF NOT EXISTS book_identifiers (
-          book_id INTEGER NOT NULL,
-          type VARCHAR(8) CHECK(type IN ('ISBN_10', 'ISBN_13')) NOT NULL,
-          identifier VARCHAR(20) NOT NULL,
-          FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
-        );
-
+        -- 4. Notes table (1-to-many to books table)
         CREATE TABLE IF NOT EXISTS notes (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           book_id INTEGER NOT NULL,
-          title VARCHAR(255) NOT NULL,
+          title TEXT NOT NULL, -- VARCHAR length is ignored in SQLite
           content TEXT NOT NULL,
           page INTEGER NOT NULL,
-          date_created DATETIME NOT NULL,
+          created_at DATETIME NOT NULL DEFAULT (datetime('now')),
           FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
         );
       `);
