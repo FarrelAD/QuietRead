@@ -15,8 +15,8 @@ export default interface Book {
     progress: number;
     categories: string[];
     imageLinks: { 
-        smallThumbnail: string; 
-        thumbnail: string 
+        smallThumbnail: string | null; 
+        thumbnail: string | null; 
     };
     isCurrentlyReading: boolean;
     language: string;

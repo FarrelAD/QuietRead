@@ -12,11 +12,17 @@ export function BigBookCard(props: props) {
       key={book.id}
       className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
     >
-      <img
-        src={book.imageLinks.thumbnail}
-        alt={book.title}
-        className="w-full h-48 object-cover"
-      />
+      {book.imageLinks.thumbnail ? (
+        <img
+          src={book.imageLinks.thumbnail}
+          alt={book.title}
+          className="w-full h-48 object-cover"
+        />
+      ) : (
+        <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg shadow-sm text-xs text-gray-500">
+          No Image
+        </div>
+      )}
       <div className="p-4">
         <h3 className="font-semibold text-gray-800 mb-1 text-sm leading-tight">
           {book.title}
@@ -48,11 +54,17 @@ export function MediumBookCard(props: MediumBookCard) {
   return (
     <div className="bg-blue-50 rounded-xl p-4 mb-6 border border-blue-100">
       <div className="flex items-center space-x-3">
-        <img
-          src={book.imageLinks.smallThumbnail}
-          alt={book.title}
-          className="w-12 h-16 object-cover rounded"
-        />
+        {book.imageLinks.smallThumbnail ? (
+          <img
+            src={book.imageLinks.smallThumbnail}
+            alt={book.title}
+            className="w-12 h-16 object-cover rounded"
+          />
+        ) : (
+          <div className="w-12 h-16 bg-gray-200 flex items-center justify-center rounded-lg shadow-sm text-xs text-gray-500">
+            No Image
+          </div>
+        )}
         <div>
           <h3 className="font-semibold text-gray-800">{book.title}</h3>
           {book.authors.map((author, index) => (

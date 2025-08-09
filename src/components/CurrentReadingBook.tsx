@@ -17,11 +17,15 @@ export default function CurrentReadingBook(props: CurrentReadingBookProps) {
       </h2>
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
         <div className="flex items-start space-x-4">
-          <img
+          {book.imageLinks?.thumbnail ? (<img
             src={book.imageLinks.thumbnail}
             alt={book.title}
             className="w-20 h-28 object-cover rounded-lg shadow-md"
-          />
+          />) : (
+            <div className="w-20 h-28 bg-gray-200 flex items-center justify-center rounded-lg shadow-sm text-xs text-gray-500">
+            No Image
+          </div>
+          )}
           <div className="flex-1">
             <h3 className="font-bold text-lg text-gray-800 mb-1">
               {book.title}
