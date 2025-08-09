@@ -1,13 +1,9 @@
 import { useContext, useState } from "react";
-import Note from "../interfaces/note";
-import Book from "../interfaces/book";
+import Note from "../models/note";
+import { BookType } from "../models/book";
 import { AddNewNoteContext } from "../context/AddNewNoteContext";
 
-type AddNewNoteProps = {
-  book: Book
-}
-
-export default function AddNewNote(props: AddNewNoteProps) {
+export default function AddNewNote(props: { book: BookType }) {
   const { book } = props;
 
   const [newNote, setNewNote] = useState("");
@@ -57,11 +53,17 @@ export default function AddNewNote(props: AddNewNoteProps) {
         {book && (
           <div className="bg-gray-50 rounded-xl p-4 mb-4">
             <div className="flex items-center space-x-3">
-              <img
-                src={book.imageLinks.smallThumbnail}
-                alt={book.title}
-                className="w-10 h-14 object-cover rounded"
-              />
+              {book.imageLinks.smallThumbnail ? (
+                <img
+                  src={book.imageLinks.smallThumbnail}
+                  alt={book.title}
+                  className="w-10 h-14 object-cover rounded"
+                />
+              ) : (
+                <div className="w-10 h-14 bg-gray-200 flex items-center justify-center rounded-lg shadow-sm text-xs text-gray-500">
+                  No Image
+                </div>
+              )}
               <div>
                 <h4 className="font-medium text-gray-800 text-sm">
                   {book.title}

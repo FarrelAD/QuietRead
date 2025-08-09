@@ -1,13 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
-import Book from "../interfaces/book";
+import { BookType } from "../models/book";
 
-type CurrentReadingBookProps = {
-  book: Book;
+export default function CurrentReadingBook(props: {
+  book: BookType;
   setShowAddNote: Dispatch<SetStateAction<boolean>>;
   toggleAddNewNote: () => void;
-};
-
-export default function CurrentReadingBook(props: CurrentReadingBookProps) {
+}) {
   const { book, setShowAddNote, toggleAddNewNote } = props;
 
   return (

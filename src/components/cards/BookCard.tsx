@@ -1,10 +1,6 @@
-import Book from "../../interfaces/book";
+import { BookType } from "../../models/book";
 
-type props = {
-  book: Book;
-};
-
-export function BigBookCard(props: props) {
+export function BigBookCard(props: { book: BookType }) {
   const { book } = props;
 
   return (
@@ -44,11 +40,7 @@ export function BigBookCard(props: props) {
   );
 }
 
-type MediumBookCard = {
-  book: Book;
-};
-
-export function MediumBookCard(props: MediumBookCard) {
+export function MediumBookCard(props: { book: BookType }) {
   const { book } = props;
 
   return (
@@ -78,11 +70,7 @@ export function MediumBookCard(props: MediumBookCard) {
   );
 }
 
-type PreviewBookCardProps = {
-  book: Book;
-};
-
-export function PreviewBookCard(props: PreviewBookCardProps) {
+export function PreviewBookCard(props: { book: BookType }) {
   const { book } = props;
 
   return (

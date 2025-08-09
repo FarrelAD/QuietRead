@@ -1,13 +1,8 @@
 import { BookOpen, Calendar } from "lucide-react";
-import Note from "../../interfaces/note";
-import Book from "../../interfaces/book";
+import Note from "../../models/note";
+import { BookType } from "../../models/book";
 
-type NoteCard = {
-  note: Note;
-  book: Book;
-};
-
-export function NoteCard(props: NoteCard) {
+export function NoteCard(props: { note: Note; book: BookType }) {
   const { note, book } = props;
 
   return (
