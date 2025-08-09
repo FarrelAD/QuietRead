@@ -4,9 +4,8 @@ import { BookType } from "../models/book";
 export default function CurrentReadingBook(props: {
   book: BookType;
   setShowAddNote: Dispatch<SetStateAction<boolean>>;
-  toggleAddNewNote: () => void;
 }) {
-  const { book, setShowAddNote, toggleAddNewNote } = props;
+  const { book, setShowAddNote } = props;
 
   return (
     <div className="mb-8">
@@ -48,7 +47,6 @@ export default function CurrentReadingBook(props: {
             <button
               onClick={() => {
                 setShowAddNote(true);
-                toggleAddNewNote();
               }}
               className="bg-blue-500 text-white px-4! py-2! rounded-lg! text-sm font-medium hover:bg-blue-600 transition-colors"
             >

@@ -146,7 +146,7 @@ export const SQLiteProvider = (props: SQLiteProviderProps) => {
         CREATE TABLE IF NOT EXISTS notes (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           book_id INTEGER NOT NULL,
-          title TEXT NOT NULL, -- VARCHAR length is ignored in SQLite
+          title TEXT NOT NULL,
           content TEXT NOT NULL,
           page INTEGER NOT NULL,
           created_at DATETIME NOT NULL DEFAULT (datetime('now')),

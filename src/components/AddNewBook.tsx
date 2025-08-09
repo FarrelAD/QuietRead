@@ -29,7 +29,6 @@ export default function AddNewBook(props: {
   };
 
   const fetchBookDetails = async (isbn: string) => {
-    console.log("Fetching book details for ISBN:", isbn);
     setIsLoadingBook(true);
 
     try {
@@ -39,11 +38,7 @@ export default function AddNewBook(props: {
       const data = await response.json();
 
       if (data.totalItems > 0) {
-        console.log(
-          `data raw: ${JSON.stringify(data["items"][0]["volumeInfo"])}`
-        );
         const volumeInfo = Book.fromJson(data["items"][0]["volumeInfo"]);
-        console.log(`volume info: ${volumeInfo}`);
 
         // Ensure imageLinks exists before modifying
         if (volumeInfo.imageLinks) {
