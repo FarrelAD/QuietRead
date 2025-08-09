@@ -8,4 +8,13 @@ export const getCurrentLocalDateTime = () => {
     const seconds = String(now.getSeconds()).padStart(2, "0");
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
+};
+
+export const formatDatetimeToDateString = (sqliteDate: string): string => {
+    const date = new Date(sqliteDate);
+    return date.toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+    });
+};
