@@ -6,18 +6,92 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { Plus, Search } from "lucide-react";
-import { useContext, useState } from "react";
-import books from "../data/books";
+import { useContext, useEffect, useState } from "react";
 import AddNewBook from "../components/AddNewBook";
 import AddNewNote from "../components/AddNewNote";
 import { AddNewNoteContext } from "../context/AddNewNoteContext";
 import CurrentReadingBook from "../components/CurrentReadingBook";
 import { BigBookCard } from "../components/cards/BookCard";
+import { useSQLite } from "../context/SQLiteContext";
+import { BookType } from "../models/book";
 
 export default function MyBooks() {
-  const [showAddBook, setShowAddBook] = useState(false);
-  const [, setShowAddNote] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [books, setBooks] = useState<BookType[]>([]);
+  const [showAddBook, setShowAddBook] = useState<boolean>(false);
+  const [, setShowAddNote] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const { db } = useSQLite();
+
+  useEffect(() => {
+    const loadBooks = async () => {
+      if (!db) return;
+
+      try {
+        const result = await db?.query(`
+          SELECT 
+            b.id,
+            b.title,
+            b.date_added,
+            b.last_read,
+            b.publisher,
+            b.published_date,
+            b.category,
+            b.description,
+            b.page_count,
+            b.progress,
+            b.is_currently_reading,
+            b.language,
+            b.small_thumbnail,
+            b.thumbnail,
+            b.isbn_10,
+            b.isbn_13,
+            GROUP_CONCAT(a.name, ', ') AS authors
+          FROM books b
+          LEFT JOIN book_authors ba ON b.id = ba.book_id
+          LEFT JOIN authors a ON ba.author_id = a.id
+          GROUP BY b.id
+          ORDER BY b.date_added DESC;
+        `);
+
+        if (!result?.values) return;
+
+        const mappedBooks = result.values.map((row) => ({
+          ...row,
+          industryIdentifiers: [
+            {
+              type: "ISBN_10",
+              identifier: row.isbn_10
+            },
+            {
+              type: "ISBN_13",
+              identifier: row.isbn_13
+            },
+          ],
+          authors: row.authors
+            ? row.authors.split(",").map((a: string) => a.trim())
+            : [],
+          imageLinks: {
+            smallThumbnail: row.small_thumbnail,
+            thumbnail: row.thumbnail
+          }
+        })) as BookType[];
+
+        setBooks(mappedBooks);
+      } catch (error: any) {
+        console.error("Error to load books data from database");
+        console.error(error);
+        alert("Error to load books data from database");
+      }
+    };
+
+    loadBooks();
+  }, [db]);
+
+  const addNewNoteCtx = useContext(AddNewNoteContext);
+  if (!addNewNoteCtx) {
+    throw new Error("AppNote button must be used within AddNewNoteProvider");
+  }
+  const { isNewNoteShow, toggleAddNewNote } = addNewNoteCtx;
 
   const currentBook = books.find((book) => book.isCurrentlyReading);
   const filteredBooks = books.filter((book) => {
@@ -40,12 +114,6 @@ export default function MyBooks() {
         break;
     }
   };
-
-  const addNewNoteCtx = useContext(AddNewNoteContext);
-  if (!addNewNoteCtx) {
-    throw new Error("AppNote button must be used within AddNewNoteProvider");
-  }
-  const { isNewNoteShow, toggleAddNewNote } = addNewNoteCtx;
 
   return (
     <IonPage>
@@ -78,7 +146,7 @@ export default function MyBooks() {
           <section className="mb-6">
             <h2 className="text-xl font-bold mb-4 text-gray-800">My Library</h2>
             <div className="grid grid-cols-2 gap-4">
-              {filteredBooks.map((book, index) => (
+              {books.map((book, index) => (
                 <BigBookCard key={index} book={book} />
               ))}
             </div>
