@@ -6,10 +6,8 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { Plus, Search } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AddNewBook from "../components/AddNewBook";
-import AddNewNote from "../components/AddNewNote";
-import { AddNewNoteContext } from "../context/AddNewNoteContext";
 import CurrentReadingBook from "../components/CurrentReadingBook";
 import { BigBookCard } from "../components/cards/BookCard";
 import { useSQLite } from "../context/SQLiteContext";
@@ -22,76 +20,70 @@ export default function MyBooks() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const { db } = useSQLite();
 
-  useEffect(() => {
-    const loadBooks = async () => {
+  const loadBooks = async () => {
+    try {
       if (!db) return;
 
-      try {
-        const result = await db?.query(`
-          SELECT 
-            b.id,
-            b.title,
-            b.date_added,
-            b.last_read,
-            b.publisher,
-            b.published_date,
-            b.category,
-            b.description,
-            b.page_count,
-            b.progress,
-            b.is_currently_reading,
-            b.language,
-            b.small_thumbnail,
-            b.thumbnail,
-            b.isbn_10,
-            b.isbn_13,
-            GROUP_CONCAT(a.name, ', ') AS authors
-          FROM books b
-          LEFT JOIN book_authors ba ON b.id = ba.book_id
-          LEFT JOIN authors a ON ba.author_id = a.id
-          GROUP BY b.id
-          ORDER BY b.date_added DESC;
-        `);
+      const result = await db?.query(`
+        SELECT 
+          b.id,
+          b.title,
+          b.date_added,
+          b.last_read,
+          b.publisher,
+          b.published_date,
+          b.category,
+          b.description,
+          b.page_count,
+          b.progress,
+          b.is_currently_reading,
+          b.language,
+          b.small_thumbnail,
+          b.thumbnail,
+          b.isbn_10,
+          b.isbn_13,
+          GROUP_CONCAT(a.name, ', ') AS authors
+        FROM books b
+        LEFT JOIN book_authors ba ON b.id = ba.book_id
+        LEFT JOIN authors a ON ba.author_id = a.id
+        GROUP BY b.id
+        ORDER BY b.date_added DESC;
+      `);
 
-        if (!result?.values) return;
+      if (!result?.values) return;
 
-        const mappedBooks = result.values.map((row) => ({
-          ...row,
-          industryIdentifiers: [
-            {
-              type: "ISBN_10",
-              identifier: row.isbn_10
-            },
-            {
-              type: "ISBN_13",
-              identifier: row.isbn_13
-            },
-          ],
-          authors: row.authors
-            ? row.authors.split(",").map((a: string) => a.trim())
-            : [],
-          imageLinks: {
-            smallThumbnail: row.small_thumbnail,
-            thumbnail: row.thumbnail
-          }
-        })) as BookType[];
+      const mappedBooks = result.values.map((row) => ({
+        ...row,
+        industryIdentifiers: [
+          {
+            type: "ISBN_10",
+            identifier: row.isbn_10,
+          },
+          {
+            type: "ISBN_13",
+            identifier: row.isbn_13,
+          },
+        ],
+        authors: row.authors
+          ? row.authors.split(",").map((a: string) => a.trim())
+          : [],
+        imageLinks: {
+          smallThumbnail: row.small_thumbnail,
+          thumbnail: row.thumbnail,
+        },
+      })) as BookType[];
 
-        setBooks(mappedBooks);
-      } catch (error: any) {
-        console.error("Error to load books data from database");
-        console.error(error);
-        alert("Error to load books data from database");
-      }
-    };
+      setBooks(mappedBooks);
+    } catch (error: any) {
+      console.error("Error to load books data from database");
+      console.error(error);
+      alert("Error to load books data from database");
+    }
+  };
 
+  useEffect(() => {
     loadBooks();
   }, [db]);
-
-  const addNewNoteCtx = useContext(AddNewNoteContext);
-  if (!addNewNoteCtx) {
-    throw new Error("AppNote button must be used within AddNewNoteProvider");
-  }
-  const { isNewNoteShow, toggleAddNewNote } = addNewNoteCtx;
 
   const currentBook = books.find((book) => book.isCurrentlyReading);
   const filteredBooks = books.filter((book) => {
@@ -104,15 +96,8 @@ export default function MyBooks() {
     return titleMatch || authorMatch;
   });
 
-  const handleCloseModal = (modalType: string, state: boolean) => {
-    switch (modalType) {
-      case "add-book":
-        setShowAddBook(state);
-        break;
-      case "add-note":
-        setShowAddNote(state);
-        break;
-    }
+  const handleCloseModal = (state: boolean) => {
+    setShowAddBook(state);
   };
 
   return (
@@ -139,7 +124,6 @@ export default function MyBooks() {
             <CurrentReadingBook
               book={currentBook}
               setShowAddNote={setShowAddNote}
-              toggleAddNewNote={toggleAddNewNote}
             />
           )}
 
@@ -159,8 +143,12 @@ export default function MyBooks() {
             <Plus className="h-6 w-6" />
           </button>
 
-          {showAddBook && <AddNewBook handleCloseModal={handleCloseModal} />}
-          {isNewNoteShow && currentBook && <AddNewNote book={currentBook} />}
+          {showAddBook && (
+            <AddNewBook
+              handleCloseModal={handleCloseModal}
+              loadBook={loadBooks}
+            />
+          )}
         </div>
       </IonContent>
     </IonPage>

@@ -6,9 +6,10 @@ import { useSQLite } from "../context/SQLiteContext";
 import { getCurrentLocalDateTime } from "../helpers/DateFormat";
 
 export default function AddNewBook(props: {
-  handleCloseModal: (modalType: string, state: boolean) => void;
+  handleCloseModal: (state: boolean) => void;
+  loadBook: () => Promise<void>;
 }) {
-  const { handleCloseModal } = props;
+  const { handleCloseModal, loadBook } = props;
 
   const [manualISBN, setManualISBN] = useState("");
   const [bookPreview, setBookPreview] = useState<BookType | null>(null);
@@ -148,6 +149,8 @@ export default function AddNewBook(props: {
         );
       }
 
+      loadBook();
+
       alert("Success to store book to personal library!");
       resetAddBookForm();
     } catch (error: any) {
@@ -246,7 +249,7 @@ export default function AddNewBook(props: {
           <button
             onClick={() => {
               resetAddBookForm();
-              handleCloseModal("add-book", false);
+              handleCloseModal(false);
             }}
             className="flex-1 py-3! px-4! text-gray-600 border border-gray-200 rounded-xl! font-medium hover:bg-gray-50 transition-colors"
           >
