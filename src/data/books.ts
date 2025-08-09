@@ -1,6 +1,6 @@
-import Book from "../interfaces/book";
+import { BookType } from "../models/book";
 
-const books: Book[] = [
+const books: BookType[] = [
   {
     id: 1,
     title: "The Great Gatsby",
