@@ -74,7 +74,7 @@ export default function Home() {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>NoteNest</IonTitle>
+          <IonTitle>QuietRead</IonTitle>
         </IonToolbar>
       </IonHeader>
 

@@ -1,4 +1,4 @@
-package io.github.farrelad.booknest;
+package io.github.farrelad.quietread;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.github.farrelad.booknest',
-  appName: 'BookNest',
+  appId: 'io.github.farrelad.quietread',
+  appName: 'QuietRead',
   webDir: 'dist',
 };
 

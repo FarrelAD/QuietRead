@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">BookNest</string>
-    <string name="title_activity_main">BookNest</string>
-    <string name="package_name">io.github.farrelad.booknest</string>
-    <string name="custom_url_scheme">io.github.farrelad.booknest</string>
+    <string name="app_name">QuietRead</string>
+    <string name="title_activity_main">QuietRead</string>
+    <string name="package_name">io.github.farrelad.quietread</string>
+    <string name="custom_url_scheme">io.github.farrelad.quietread</string>
 </resources>
