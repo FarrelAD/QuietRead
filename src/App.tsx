@@ -35,6 +35,7 @@ import "@ionic/react/css/palettes/high-contrast.always.css";
 
 /* Theme variables */
 import "./theme/variables.css";
+import "./App.css";
 import Home from "./pages/Home";
 import ReadingNotes from "./pages/ReadingNotes";
 import Settings from "./pages/Settings";

@@ -1,0 +1,71 @@
+.settings-list {
+  background: transparent;
+  padding-bottom: 100px; /* Add bottom padding to prevent content from hiding behind navbar */
+}
+
+.settings-section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+  padding: 0 16px;
+}
+
+.setting-item {
+  --background: var(--ion-background-color, #fff);
+  --border-radius: 16px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --inner-padding-end: 0;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dark .setting-item {
+  --background: var(--ion-background-color, #1e1e1e);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.setting-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+}
+
+.setting-icon-wrapper ion-icon {
+  font-size: 20px;
+}
+
+.setting-item ion-label h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: var(--ion-text-color);
+}
+
+.setting-item ion-label p {
+  font-size: 13px;
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+.setting-item ion-toggle {
+  --handle-width: 22px;
+  --handle-height: 22px;
+}
+
+.setting-item ion-icon[slot="end"] {
+  color: var(--ion-color-medium);
+  font-size: 20px;
+  margin-left: 8px;
+}

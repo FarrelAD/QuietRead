@@ -1,0 +1,126 @@
+ion-tab-bar {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  width: calc(100% - 32px);
+  border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --background: var(--ion-background-color, #fff);
+  height: 60px;
+  padding: 8px 0;
+}
+
+.dark ion-tab-bar {
+  --background: var(--ion-background-color, #1e1e1e);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+ion-tab-button {
+  --color: var(--ion-color-medium);
+  --color-selected: var(--ion-color-primary);
+  position: relative;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Reset default Ionic icon margin */
+ion-tab-button ion-icon {
+  margin-bottom: 0;
+  font-size: 24px;
+}
+
+/* Inactive state - hide label */
+ion-tab-button ion-label {
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-left: 0;
+  white-space: nowrap;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 24px;
+}
+
+/* Active state - show filled background and label */
+ion-tab-button.tab-selected {
+  background: var(--ion-color-primary);
+  border-radius: 16px;
+  margin: 0 8px;
+  --color-selected: #fff;
+  padding: 0 16px;
+}
+
+.dark ion-tab-button.tab-selected {
+  background: var(--ion-color-primary);
+}
+
+ion-tab-button.tab-selected ion-label {
+  opacity: 1;
+  max-width: 100px;
+  margin-left: 8px;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+/* Remove duplicate flexbox rules */
+ion-tab-button.tab-selected ion-icon {
+  font-size: 24px;
+}
+
+/* Add padding to the content to prevent it from being hidden behind the floating tab bar */
+ion-router-outlet {
+  padding-bottom: 92px;
+}
+
+/* Seamless App Bar Styles */
+ion-header {
+  box-shadow: none !important;
+  --box-shadow: none !important;
+}
+
+ion-toolbar {
+  --background: var(--ion-background-color);
+  --border-style: none;
+  --border-width: 0;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  --box-shadow: none;
+}
+
+ion-title {
+  text-align: center;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+/* Remove default toolbar borders and shadows completely */
+ion-header ion-toolbar::part(native) {
+  box-shadow: none !important;
+  border: none !important;
+  --box-shadow: none !important;
+  background: var(--ion-background-color);
+}
+
+ion-header::after {
+  display: none !important;
+}
+
+/* Ensure content starts right below header without gap */
+ion-content {
+  --background: var(--ion-background-color);
+}
+
+/* Specific styling for search toolbar in ReadingNotes */
+ion-toolbar:has(ion-searchbar) {
+  --padding-top: 4px;
+  --padding-bottom: 8px;
+}

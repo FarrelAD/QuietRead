@@ -31,4 +31,5 @@ export class Note implements NoteType {
 
 export type NoteWithBook = NoteType & {
     bookTitle: string;
+    imageUrl?: string;
 };

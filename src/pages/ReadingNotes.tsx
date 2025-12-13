@@ -26,6 +26,7 @@ import {
 } from "ionicons/icons";
 import { useState } from "react";
 import { NoteWithBook } from "../models/note";
+import "./ReadingNotes.css";
 
 type SourceType = "all" | "book" | "blog" | "article";
 
@@ -42,6 +43,7 @@ export default function ReadingNotes() {
       createdAt: new Date().toISOString(),
       sourceType: "book",
       tags: ["functions", "best-practices"],
+      imageUrl: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=200",
     },
     {
       id: 2,
@@ -63,6 +65,7 @@ export default function ReadingNotes() {
       createdAt: new Date(Date.now() - 172800000).toISOString(),
       sourceType: "article",
       tags: ["ai", "development"],
+      imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=200",
     },
   ]);
 
@@ -112,17 +115,18 @@ export default function ReadingNotes() {
         <IonToolbar>
           <IonTitle>Reading Notes</IonTitle>
         </IonToolbar>
-        <IonToolbar>
-          <IonSearchbar
-            value={searchText}
-            onIonInput={(e) => setSearchText(e.detail.value!)}
-            placeholder="Search notes..."
-          />
-        </IonToolbar>
       </IonHeader>
 
       <IonContent fullscreen>
         <div className="ion-padding">
+          <IonSearchbar
+            value={searchText}
+            onIonInput={(e) => setSearchText(e.detail.value!)}
+            placeholder="Search..."
+            className="custom-searchbar"
+            searchIcon={undefined}
+          />
+
           <IonSegment
             value={selectedSource}
             onIonChange={(e) =>
@@ -145,48 +149,47 @@ export default function ReadingNotes() {
 
           <div className="ion-margin-top">
             {filteredNotes.map((note) => (
-              <IonCard key={note.id} button>
-                <IonCardHeader>
-                  <div className="flex items-center gap-2 mb-2">
-                    <IonChip color={getSourceColor(note.sourceType || "book")}>
+              <div key={note.id} className="note-card" onClick={() => {}}>
+                {note.imageUrl && (
+                  <div className="note-card-image">
+                    <img src={note.imageUrl} alt={note.bookTitle} />
+                  </div>
+                )}
+                <div className="note-card-content">
+                  <div className="note-card-header">
+                    <IonChip className="note-chip" color={getSourceColor(note.sourceType || "book")}>
                       <IonIcon icon={getSourceIcon(note.sourceType || "book")} />
-                      <IonLabel className="text-xs">
-                        {note.sourceType || "book"}
-                      </IonLabel>
+                      <IonLabel>{note.sourceType || "book"}</IonLabel>
                     </IonChip>
                     {note.page && (
-                      <IonChip color="medium">
-                        <IonLabel className="text-xs">p. {note.page}</IonLabel>
+                      <IonChip className="note-chip page-chip">
+                        <IonLabel>p. {note.page}</IonLabel>
                       </IonChip>
                     )}
                   </div>
-                  <IonCardSubtitle className="text-xs mb-1">
-                    {note.bookTitle}
-                  </IonCardSubtitle>
-                  <IonCardTitle className="text-base">{note.title}</IonCardTitle>
-                </IonCardHeader>
-                <IonCardContent>
-                  <p className="text-sm text-gray-700 mb-3">{note.content}</p>
+                  <div className="note-card-source">{note.bookTitle}</div>
+                  <h3 className="note-card-title">{note.title}</h3>
+                  <p className="note-card-text">{note.content}</p>
                   {note.tags && note.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-2">
+                    <div className="note-card-tags">
                       {note.tags.map((tag, index) => (
-                        <IonChip key={index} color="light" className="text-xs">
+                        <span key={index} className="tag">
                           #{tag}
-                        </IonChip>
+                        </span>
                       ))}
                     </div>
                   )}
-                  <div className="text-xs text-gray-500">
-                    {new Date(note.createdAt).toLocaleDateString()} at{" "}
-                    {new Date(note.createdAt).toLocaleTimeString()}
+                  <div className="note-card-date">
+                    {new Date(note.createdAt).toLocaleDateString()} • {" "}
+                    {new Date(note.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
-                </IonCardContent>
-              </IonCard>
+                </div>
+              </div>
             ))}
           </div>
         </div>
 
-        <IonFab slot="fixed" vertical="bottom" horizontal="end">
+        <IonFab slot="fixed" vertical="bottom" horizontal="end" className="custom-fab">
           <IonFabButton onClick={() => setShowAddNote(true)}>
             <IonIcon icon={add} />
           </IonFabButton>
