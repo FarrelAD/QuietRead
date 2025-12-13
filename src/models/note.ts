@@ -1,8 +1,11 @@
 export type NoteFormData = {
-    bookId: number;
+    bookId?: number;
     title: string;
     content: string;
-    page: number;
+    page?: number;
+    sourceType?: 'book' | 'blog' | 'article';
+    tags?: string[];
+    url?: string;
 };
 
 export type NoteType = NoteFormData & {
@@ -10,13 +13,16 @@ export type NoteType = NoteFormData & {
     createdAt: string;
 };
 
-export class Note implements Note {
+export class Note implements NoteType {
     id!: number;
-    bookId!: number;
+    bookId?: number;
     title!: string;
     content!: string;
-    page!: number;
+    page?: number;
     createdAt!: string;
+    sourceType?: 'book' | 'blog' | 'article';
+    tags?: string[];
+    url?: string;
 
     constructor(data: NoteType) {
         Object.assign(this, data);

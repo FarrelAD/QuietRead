@@ -4,56 +4,106 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  IonSearchbar,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent,
+  IonChip,
+  IonLabel,
+  IonSegment,
+  IonSegmentButton,
 } from "@ionic/react";
-import { useEffect, useState } from "react";
-import AddNewNote from "../components/AddNewNote";
-import { NoteCard } from "../components/cards/NoteCard";
-import { Plus } from "lucide-react";
-import { useSQLite } from "../context/SQLiteContext";
+import {
+  add,
+  bookOutline,
+  globeOutline,
+  documentTextOutline,
+} from "ionicons/icons";
+import { useState } from "react";
 import { NoteWithBook } from "../models/note";
 
+type SourceType = "all" | "book" | "blog" | "article";
+
 export default function ReadingNotes() {
-  const [notes, setNotes] = useState<NoteWithBook[]>([]);
+  // Mock data - will be replaced with actual CRUD operations
+  const [notes, setNotes] = useState<NoteWithBook[]>([
+    {
+      id: 1,
+      bookTitle: "Clean Code",
+      title: "Functions should do one thing",
+      content:
+        "Functions should do one thing. They should do it well. They should do it only.",
+      page: 35,
+      createdAt: new Date().toISOString(),
+      sourceType: "book",
+      tags: ["functions", "best-practices"],
+    },
+    {
+      id: 2,
+      bookTitle: "Understanding React Hooks - Dev.to",
+      title: "useState basics",
+      content:
+        "useState is a Hook that lets you add React state to function components.",
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      sourceType: "blog",
+      tags: ["react", "hooks"],
+      url: "https://dev.to/react-hooks",
+    },
+    {
+      id: 3,
+      bookTitle: "The Future of AI in Software Development",
+      title: "AI in code generation",
+      content:
+        "AI-powered tools are revolutionizing how developers write and review code.",
+      createdAt: new Date(Date.now() - 172800000).toISOString(),
+      sourceType: "article",
+      tags: ["ai", "development"],
+    },
+  ]);
+
   const [showAddNote, setShowAddNote] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState("");
+  const [selectedSource, setSelectedSource] = useState<SourceType>("all");
 
-  const { db } = useSQLite();
+  const filteredNotes = notes.filter((note) => {
+    const matchesType =
+      selectedSource === "all" || note.sourceType === selectedSource;
+    const matchesSearch =
+      note.title.toLowerCase().includes(searchText.toLowerCase()) ||
+      note.content.toLowerCase().includes(searchText.toLowerCase()) ||
+      note.bookTitle.toLowerCase().includes(searchText.toLowerCase());
+    return matchesType && matchesSearch;
+  });
 
-  const loadNotes = async () => {
-    try {
-      if (!db) return;
-
-      const result = await db.query(`
-          SELECT 
-            n.*,
-            b.title AS book_title
-          FROM notes n
-          INNER JOIN books b ON n.book_id = b.id;
-        `);
-
-      const mappedNotes: NoteWithBook[] = (result.values ?? []).map((row) => ({
-        id: row.id,
-        bookId: row.book_id,
-        bookTitle: row.book_title,
-        title: row.title,
-        content: row.content,
-        page: row.page,
-        createdAt: row.created_at,
-      }));
-
-      setNotes(mappedNotes);
-    } catch (error: any) {
-      console.error("Error to load notes data from database");
-      console.error(error);
-      alert("Error to load notes data from database");
+  const getSourceIcon = (type: string) => {
+    switch (type) {
+      case "book":
+        return bookOutline;
+      case "blog":
+        return globeOutline;
+      case "article":
+        return documentTextOutline;
+      default:
+        return bookOutline;
     }
   };
 
-  useEffect(() => {
-    loadNotes();
-  }, [db]);
-
-  const handleCloseModal = (state: boolean) => {
-    setShowAddNote(state);
+  const getSourceColor = (type: string) => {
+    switch (type) {
+      case "book":
+        return "primary";
+      case "blog":
+        return "success";
+      case "article":
+        return "warning";
+      default:
+        return "medium";
+    }
   };
 
   return (
@@ -62,33 +112,88 @@ export default function ReadingNotes() {
         <IonToolbar>
           <IonTitle>Reading Notes</IonTitle>
         </IonToolbar>
+        <IonToolbar>
+          <IonSearchbar
+            value={searchText}
+            onIonInput={(e) => setSearchText(e.detail.value!)}
+            placeholder="Search notes..."
+          />
+        </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen className="ion-padding">
-        <div className="p-4 pb-20">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-800">Reading Notes</h2>
-          </div>
 
-          <section className="space-y-4">
-            {notes.map((note, index) => (
-              <NoteCard key={index} noteWithBook={note} />
-            ))}
-          </section>
-
-          <button
-            onClick={() => setShowAddNote(true)}
-            className="fixed bottom-20 right-4 w-14 h-14 bg-blue-500 text-white rounded-full! shadow-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
+      <IonContent fullscreen>
+        <div className="ion-padding">
+          <IonSegment
+            value={selectedSource}
+            onIonChange={(e) =>
+              setSelectedSource(e.detail.value as SourceType)
+            }
           >
-            <Plus className="h-6 w-6" />
-          </button>
+            <IonSegmentButton value="all">
+              <IonLabel>All</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="book">
+              <IonLabel>Books</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="blog">
+              <IonLabel>Blogs</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="article">
+              <IonLabel>Articles</IonLabel>
+            </IonSegmentButton>
+          </IonSegment>
 
-          {showAddNote && (
-            <AddNewNote
-              handleCloseModal={handleCloseModal}
-              loadNotes={loadNotes}
-            />
-          )}
+          <div className="ion-margin-top">
+            {filteredNotes.map((note) => (
+              <IonCard key={note.id} button>
+                <IonCardHeader>
+                  <div className="flex items-center gap-2 mb-2">
+                    <IonChip color={getSourceColor(note.sourceType || "book")}>
+                      <IonIcon icon={getSourceIcon(note.sourceType || "book")} />
+                      <IonLabel className="text-xs">
+                        {note.sourceType || "book"}
+                      </IonLabel>
+                    </IonChip>
+                    {note.page && (
+                      <IonChip color="medium">
+                        <IonLabel className="text-xs">p. {note.page}</IonLabel>
+                      </IonChip>
+                    )}
+                  </div>
+                  <IonCardSubtitle className="text-xs mb-1">
+                    {note.bookTitle}
+                  </IonCardSubtitle>
+                  <IonCardTitle className="text-base">{note.title}</IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                  <p className="text-sm text-gray-700 mb-3">{note.content}</p>
+                  {note.tags && note.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {note.tags.map((tag, index) => (
+                        <IonChip key={index} color="light" className="text-xs">
+                          #{tag}
+                        </IonChip>
+                      ))}
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500">
+                    {new Date(note.createdAt).toLocaleDateString()} at{" "}
+                    {new Date(note.createdAt).toLocaleTimeString()}
+                  </div>
+                </IonCardContent>
+              </IonCard>
+            ))}
+          </div>
         </div>
+
+        <IonFab slot="fixed" vertical="bottom" horizontal="end">
+          <IonFabButton onClick={() => setShowAddNote(true)}>
+            <IonIcon icon={add} />
+          </IonFabButton>
+        </IonFab>
+
+        {/* TODO: Create new AddNewNote modal component for multi-source notes */}
+        {showAddNote && <div>Add Note Modal - To be implemented</div>}
       </IonContent>
     </IonPage>
   );
