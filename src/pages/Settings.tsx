@@ -20,10 +20,11 @@ import {
   trashOutline,
   informationCircleOutline 
 } from "ionicons/icons";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { DarkModeContext } from "../App";
 
 export default function Settings() {
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, toggleDarkMode } = useContext(DarkModeContext);
   const [notifications, setNotifications] = useState(true);
   const [defaultView, setDefaultView] = useState('all');
 
@@ -46,7 +47,7 @@ export default function Settings() {
             <IonLabel>Dark Mode</IonLabel>
             <IonToggle
               checked={darkMode}
-              onIonChange={(e) => setDarkMode(e.detail.checked)}
+              onIonChange={toggleDarkMode}
             />
           </IonItem>
 
@@ -104,7 +105,7 @@ export default function Settings() {
 
           <IonItem lines="none">
             <IonLabel className="ion-text-center ion-padding">
-              <p className="text-sm text-gray-500">
+              <p style={{ fontSize: '14px', color: 'var(--ion-color-medium)' }}>
                 Made with ❤️ for better reading notes
               </p>
             </IonLabel>

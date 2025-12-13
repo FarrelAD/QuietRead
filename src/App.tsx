@@ -11,7 +11,7 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { homeOutline, bookmarkOutline, settingsOutline } from "ionicons/icons";
-
+import { createContext, useState, useEffect } from "react";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -41,41 +41,72 @@ import Settings from "./pages/Settings";
 
 setupIonicReact();
 
+// Dark Mode Context
+export const DarkModeContext = createContext({
+  darkMode: false,
+  toggleDarkMode: () => {},
+});
+
 export default function App() {
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Load dark mode preference from localStorage
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(savedDarkMode);
+    if (savedDarkMode) {
+      document.body.classList.add('dark');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    localStorage.setItem('darkMode', String(newDarkMode));
+    
+    if (newDarkMode) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  };
+
   return (
-    <IonApp>
-      <IonReactRouter>
-        <IonTabs>
-          <IonRouterOutlet>
-            <Route exact path="/home">
-              <Home />
-            </Route>
-            <Route exact path="/notes">
-              <ReadingNotes />
-            </Route>
-            <Route exact path="/settings">
-              <Settings />
-            </Route>
-            <Route exact path="/">
-              <Redirect to="/home" />
-            </Route>
-          </IonRouterOutlet>
-          <IonTabBar slot="bottom">
-            <IonTabButton tab="home" href="/home">
-              <IonIcon aria-hidden="true" icon={homeOutline} />
-              <IonLabel>Home</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="notes" href="/notes">
-              <IonIcon aria-hidden="true" icon={bookmarkOutline} />
-              <IonLabel>Notes</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="settings" href="/settings">
-              <IonIcon aria-hidden="true" icon={settingsOutline} />
-              <IonLabel>Settings</IonLabel>
-            </IonTabButton>
-          </IonTabBar>
-        </IonTabs>
-      </IonReactRouter>
-    </IonApp>
+    <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
+      <IonApp>
+        <IonReactRouter>
+          <IonTabs>
+            <IonRouterOutlet>
+              <Route exact path="/home">
+                <Home />
+              </Route>
+              <Route exact path="/notes">
+                <ReadingNotes />
+              </Route>
+              <Route exact path="/settings">
+                <Settings />
+              </Route>
+              <Route exact path="/">
+                <Redirect to="/home" />
+              </Route>
+            </IonRouterOutlet>
+            <IonTabBar slot="bottom">
+              <IonTabButton tab="home" href="/home">
+                <IonIcon aria-hidden="true" icon={homeOutline} />
+                <IonLabel>Home</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="notes" href="/notes">
+                <IonIcon aria-hidden="true" icon={bookmarkOutline} />
+                <IonLabel>Notes</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="settings" href="/settings">
+                <IonIcon aria-hidden="true" icon={settingsOutline} />
+                <IonLabel>Settings</IonLabel>
+              </IonTabButton>
+            </IonTabBar>
+          </IonTabs>
+        </IonReactRouter>
+      </IonApp>
+    </DarkModeContext.Provider>
   );
 }
