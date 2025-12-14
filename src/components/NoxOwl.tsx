@@ -7,6 +7,15 @@ export default function NoxOwl() {
   const [greeting, setGreeting] = useState("");
   const [noxMessage, setNoxMessage] = useState("");
   const [showMessage, setShowMessage] = useState(true);
+  const [isHooting, setIsHooting] = useState(false);
+
+  // Owl sound texts to display when audio plays
+  const owlSounds = [
+    "Hoo... Hoo...",
+    "Hoot hoot! 🦉",
+    "Whoo... whoo...",
+    "Hoo-hoo-hoo...",
+  ];
 
   // Set greeting and message based on time of day
   useEffect(() => {
@@ -37,9 +46,19 @@ export default function NoxOwl() {
     const playRandomOwlSound = () => {
       const randomAudio = Math.random() > 0.5 ? audio1 : audio2;
       randomAudio.currentTime = 0;
+
+      // Show hooting message when audio plays
+      setIsHooting(true);
+      setShowMessage(true);
+
       randomAudio.play().catch((err) => {
         console.log("Audio autoplay prevented:", err);
       });
+
+      // Hide hooting message after 3 seconds
+      setTimeout(() => {
+        setIsHooting(false);
+      }, 3000);
     };
 
     const scheduleNextSound = () => {
@@ -89,8 +108,23 @@ export default function NoxOwl() {
               className="speech-bubble"
               onClick={() => setShowMessage(false)}
             >
-              <div className="greeting-text">{greeting}! 🦉</div>
-              <div className="message-text">{noxMessage}</div>
+              {isHooting ? (
+                <>
+                  <div
+                    className="greeting-text"
+                    style={{ fontSize: "1.2rem" }}
+                  >
+                    {
+                      owlSounds[Math.floor(Math.random() * owlSounds.length)]
+                    }
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="greeting-text">{greeting}! 🦉</div>
+                  <div className="message-text">{noxMessage}</div>
+                </>
+              )}
             </div>
           )}
         </div>
