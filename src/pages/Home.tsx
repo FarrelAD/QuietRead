@@ -14,6 +14,7 @@ import {
   libraryOutline,
 } from "ionicons/icons";
 import { useState, useEffect } from "react";
+import noxCharacter from "@/assets/nox-character.png";
 import "./Home.css";
 
 export default function Home() {
@@ -72,7 +73,7 @@ export default function Home() {
             {/* Nox Character */}
             <div className="nox-container">
               <img
-                src="/assets/nox-character.png"
+                src={noxCharacter}
                 alt="Nox the Owl"
                 className="nox-character"
               />
