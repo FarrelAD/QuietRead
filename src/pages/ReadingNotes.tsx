@@ -8,24 +8,14 @@ import {
   IonFab,
   IonFabButton,
   IonIcon,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent,
-  IonChip,
   IonLabel,
   IonSegment,
   IonSegmentButton,
 } from "@ionic/react";
-import {
-  add,
-  bookOutline,
-  globeOutline,
-  documentTextOutline,
-} from "ionicons/icons";
+import { add } from "ionicons/icons";
 import { useState } from "react";
-import { NoteWithBook } from "../models/note";
+import { NoteWithBook } from "@/models/note";
+import NoteCard from "@/components/cards/NoteCard";
 import "./ReadingNotes.css";
 
 type SourceType = "all" | "book" | "blog" | "article";
@@ -43,7 +33,8 @@ export default function ReadingNotes() {
       createdAt: new Date().toISOString(),
       sourceType: "book",
       tags: ["functions", "best-practices"],
-      imageUrl: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=200",
+      imageUrl:
+        "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=200",
     },
     {
       id: 2,
@@ -65,7 +56,8 @@ export default function ReadingNotes() {
       createdAt: new Date(Date.now() - 172800000).toISOString(),
       sourceType: "article",
       tags: ["ai", "development"],
-      imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=200",
+      imageUrl:
+        "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=200",
     },
   ]);
 
@@ -83,30 +75,9 @@ export default function ReadingNotes() {
     return matchesType && matchesSearch;
   });
 
-  const getSourceIcon = (type: string) => {
-    switch (type) {
-      case "book":
-        return bookOutline;
-      case "blog":
-        return globeOutline;
-      case "article":
-        return documentTextOutline;
-      default:
-        return bookOutline;
-    }
-  };
-
-  const getSourceColor = (type: string) => {
-    switch (type) {
-      case "book":
-        return "primary";
-      case "blog":
-        return "success";
-      case "article":
-        return "warning";
-      default:
-        return "medium";
-    }
+  const handleNoteClick = (noteId: number) => {
+    // TODO: Implement note detail view or edit functionality
+    console.log("Note clicked:", noteId);
   };
 
   return (
@@ -129,9 +100,7 @@ export default function ReadingNotes() {
 
           <IonSegment
             value={selectedSource}
-            onIonChange={(e) =>
-              setSelectedSource(e.detail.value as SourceType)
-            }
+            onIonChange={(e) => setSelectedSource(e.detail.value as SourceType)}
           >
             <IonSegmentButton value="all">
               <IonLabel>All</IonLabel>
@@ -149,47 +118,21 @@ export default function ReadingNotes() {
 
           <div className="ion-margin-top">
             {filteredNotes.map((note) => (
-              <div key={note.id} className="note-card" onClick={() => {}}>
-                {note.imageUrl && (
-                  <div className="note-card-image">
-                    <img src={note.imageUrl} alt={note.bookTitle} />
-                  </div>
-                )}
-                <div className="note-card-content">
-                  <div className="note-card-header">
-                    <IonChip className="note-chip" color={getSourceColor(note.sourceType || "book")}>
-                      <IonIcon icon={getSourceIcon(note.sourceType || "book")} />
-                      <IonLabel>{note.sourceType || "book"}</IonLabel>
-                    </IonChip>
-                    {note.page && (
-                      <IonChip className="note-chip page-chip">
-                        <IonLabel>p. {note.page}</IonLabel>
-                      </IonChip>
-                    )}
-                  </div>
-                  <div className="note-card-source">{note.bookTitle}</div>
-                  <h3 className="note-card-title">{note.title}</h3>
-                  <p className="note-card-text">{note.content}</p>
-                  {note.tags && note.tags.length > 0 && (
-                    <div className="note-card-tags">
-                      {note.tags.map((tag, index) => (
-                        <span key={index} className="tag">
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <div className="note-card-date">
-                    {new Date(note.createdAt).toLocaleDateString()} • {" "}
-                    {new Date(note.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
-                </div>
-              </div>
+              <NoteCard
+                key={note.id}
+                note={note}
+                onClick={() => handleNoteClick(note.id)}
+              />
             ))}
           </div>
         </div>
 
-        <IonFab slot="fixed" vertical="bottom" horizontal="end" className="custom-fab">
+        <IonFab
+          slot="fixed"
+          vertical="bottom"
+          horizontal="end"
+          className="custom-fab"
+        >
           <IonFabButton onClick={() => setShowAddNote(true)}>
             <IonIcon icon={add} />
           </IonFabButton>

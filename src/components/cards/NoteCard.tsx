@@ -1,33 +1,83 @@
-import { BookOpen, Calendar } from "lucide-react";
+import {
+  IonChip,
+  IonIcon,
+  IonLabel,
+} from "@ionic/react";
+import {
+  bookOutline,
+  globeOutline,
+  documentTextOutline,
+} from "ionicons/icons";
 import { NoteWithBook } from "../../models/note";
-import { formatDatetimeToDateString } from "../../helpers/DateFormat";
+import "./NoteCard.css";
 
-export function NoteCard(props: { noteWithBook: NoteWithBook }) {
-  const { noteWithBook } = props;
+interface NoteCardProps {
+  note: NoteWithBook;
+  onClick?: () => void;
+}
+
+export default function NoteCard({ note, onClick }: NoteCardProps) {
+  const getSourceIcon = (type: string) => {
+    switch (type) {
+      case "book":
+        return bookOutline;
+      case "blog":
+        return globeOutline;
+      case "article":
+        return documentTextOutline;
+      default:
+        return bookOutline;
+    }
+  };
+
+  const getSourceColor = (type: string) => {
+    switch (type) {
+      case "book":
+        return "primary";
+      case "blog":
+        return "success";
+      case "article":
+        return "warning";
+      default:
+        return "medium";
+    }
+  };
 
   return (
-    <div
-      key={noteWithBook.id}
-      className="bg-white rounded-xl p-5 shadow-sm border border-gray-100"
-    >
-      <div className="flex items-start justify-between mb-3">
-        <h3 className="font-semibold text-gray-800">{noteWithBook.title}</h3>
-        <div className="flex items-center space-x-2 text-xs text-gray-500">
-          <span>{formatDatetimeToDateString(noteWithBook.createdAt)}</span>
-          <Calendar className="h-3 w-3" />
+    <div className="note-card" onClick={onClick}>
+      {note.imageUrl && (
+        <div className="note-card-image">
+          <img src={note.imageUrl} alt={note.bookTitle} />
         </div>
-      </div>
-      <p className="text-gray-600 text-sm mb-3 leading-relaxed">
-        {noteWithBook.content}
-      </p>
-      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-        <div className="flex items-center space-x-2">
-          <BookOpen className="h-4 w-4 text-gray-400" />
-          <span className="text-xs text-gray-600">{noteWithBook.title}</span>
+      )}
+      <div className="note-card-content">
+        <div className="note-card-header">
+          <IonChip className="note-chip" color={getSourceColor(note.sourceType || "book")}>
+            <IonIcon icon={getSourceIcon(note.sourceType || "book")} />
+            <IonLabel>{note.sourceType || "book"}</IonLabel>
+          </IonChip>
+          {note.page && (
+            <IonChip className="note-chip page-chip">
+              <IonLabel>p. {note.page}</IonLabel>
+            </IonChip>
+          )}
         </div>
-        {noteWithBook.page && (
-          <span className="text-xs text-gray-500">Page {noteWithBook.page}</span>
+        <div className="note-card-source">{note.bookTitle}</div>
+        <h3 className="note-card-title">{note.title}</h3>
+        <p className="note-card-text">{note.content}</p>
+        {note.tags && note.tags.length > 0 && (
+          <div className="note-card-tags">
+            {note.tags.map((tag, index) => (
+              <span key={index} className="tag">
+                #{tag}
+              </span>
+            ))}
+          </div>
         )}
+        <div className="note-card-date">
+          {new Date(note.createdAt).toLocaleDateString()} •{" "}
+          {new Date(note.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </div>
       </div>
     </div>
   );

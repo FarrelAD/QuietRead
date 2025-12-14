@@ -5,12 +5,6 @@ import {
   IonTitle,
   IonToolbar,
   IonList,
-  IonItem,
-  IonLabel,
-  IonToggle,
-  IonSelect,
-  IonSelectOption,
-  IonIcon,
 } from "@ionic/react";
 import { 
   moonOutline, 
@@ -18,16 +12,31 @@ import {
   downloadOutline, 
   trashOutline,
   informationCircleOutline,
-  chevronForwardOutline 
 } from "ionicons/icons";
 import { useState, useContext } from "react";
 import { DarkModeContext } from "../App";
+import SettingsItem from "@/components/SettingsItem";
+import SettingsSection from "@/components/SettingsSection";
 import "./Settings.css";
 
 export default function Settings() {
   const { darkMode, toggleDarkMode } = useContext(DarkModeContext);
   const [notifications, setNotifications] = useState(true);
-  const [defaultView, setDefaultView] = useState('all');
+
+  const handleExportData = () => {
+    // TODO: Implement export functionality
+    console.log("Exporting data...");
+  };
+
+  const handleClearData = () => {
+    // TODO: Implement clear data with confirmation dialog
+    console.log("Clearing data...");
+  };
+
+  const handleVersionClick = () => {
+    // TODO: Show app info or changelog
+    console.log("Version info clicked");
+  };
 
   return (
     <IonPage>
@@ -40,87 +49,67 @@ export default function Settings() {
       <IonContent fullscreen className="ion-padding">
         <IonList lines="none" className="settings-list">
           {/* Appearance Section */}
-          <div className="settings-section">
-            <h3 className="section-title">Appearance</h3>
-            
-            <IonItem button className="setting-item">
-              <div className="setting-icon-wrapper" style={{ background: '#3880ff15' }}>
-                <IonIcon icon={moonOutline} style={{ color: '#3880ff' }} />
-              </div>
-              <IonLabel>
-                <h2>Dark Mode</h2>
-                <p>Toggle dark theme</p>
-              </IonLabel>
-              <IonToggle
-                slot="end"
-                checked={darkMode}
-                onIonChange={toggleDarkMode}
-              />
-            </IonItem>
-          </div>
+          <SettingsSection title="Appearance">
+            <SettingsItem
+              icon={moonOutline}
+              iconColor="#3880ff"
+              iconBackground="#3880ff15"
+              title="Dark Mode"
+              description="Toggle dark theme"
+              type="toggle"
+              checked={darkMode}
+              onToggle={toggleDarkMode}
+            />
+          </SettingsSection>
 
           {/* Notifications Section */}
-          <div className="settings-section">
-            <h3 className="section-title">Notifications</h3>
-            
-            <IonItem button className="setting-item">
-              <div className="setting-icon-wrapper" style={{ background: '#ffc40915' }}>
-                <IonIcon icon={notificationsOutline} style={{ color: '#ffc409' }} />
-              </div>
-              <IonLabel>
-                <h2>Enable Notifications</h2>
-                <p>Receive reading reminders</p>
-              </IonLabel>
-              <IonToggle
-                slot="end"
-                checked={notifications}
-                onIonChange={(e) => setNotifications(e.detail.checked)}
-              />
-            </IonItem>
-          </div>
+          <SettingsSection title="Notifications">
+            <SettingsItem
+              icon={notificationsOutline}
+              iconColor="#ffc409"
+              iconBackground="#ffc40915"
+              title="Enable Notifications"
+              description="Receive reading reminders"
+              type="toggle"
+              checked={notifications}
+              onToggle={setNotifications}
+            />
+          </SettingsSection>
 
           {/* Data Management Section */}
-          <div className="settings-section">
-            <h3 className="section-title">Data Management</h3>
-            
-            <IonItem button className="setting-item">
-              <div className="setting-icon-wrapper" style={{ background: '#2dd36f15' }}>
-                <IonIcon icon={downloadOutline} style={{ color: '#2dd36f' }} />
-              </div>
-              <IonLabel>
-                <h2>Export Data</h2>
-                <p>Download your notes</p>
-              </IonLabel>
-              <IonIcon icon={chevronForwardOutline} slot="end" />
-            </IonItem>
-
-            <IonItem button className="setting-item">
-              <div className="setting-icon-wrapper" style={{ background: '#eb445a15' }}>
-                <IonIcon icon={trashOutline} style={{ color: '#eb445a' }} />
-              </div>
-              <IonLabel>
-                <h2>Clear All Data</h2>
-                <p>Delete all your notes</p>
-              </IonLabel>
-              <IonIcon icon={chevronForwardOutline} slot="end" />
-            </IonItem>
-          </div>
+          <SettingsSection title="Data Management">
+            <SettingsItem
+              icon={downloadOutline}
+              iconColor="#2dd36f"
+              iconBackground="#2dd36f15"
+              title="Export Data"
+              description="Download your notes"
+              type="button"
+              onClick={handleExportData}
+            />
+            <SettingsItem
+              icon={trashOutline}
+              iconColor="#eb445a"
+              iconBackground="#eb445a15"
+              title="Clear All Data"
+              description="Delete all your notes"
+              type="button"
+              onClick={handleClearData}
+            />
+          </SettingsSection>
 
           {/* About Section */}
-          <div className="settings-section">
-            <h3 className="section-title">About</h3>
-            
-            <IonItem button className="setting-item">
-              <div className="setting-icon-wrapper" style={{ background: '#92949c15' }}>
-                <IonIcon icon={informationCircleOutline} style={{ color: '#92949c' }} />
-              </div>
-              <IonLabel>
-                <h2>Version</h2>
-                <p>1.0.0</p>
-              </IonLabel>
-              <IonIcon icon={chevronForwardOutline} slot="end" />
-            </IonItem>
-          </div>
+          <SettingsSection title="About">
+            <SettingsItem
+              icon={informationCircleOutline}
+              iconColor="#92949c"
+              iconBackground="#92949c15"
+              title="Version"
+              description="1.0.0"
+              type="button"
+              onClick={handleVersionClick}
+            />
+          </SettingsSection>
 
           {/* Footer */}
           <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--ion-color-medium)' }}>
