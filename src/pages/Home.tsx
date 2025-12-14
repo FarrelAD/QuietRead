@@ -4,16 +4,15 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonIcon,
 } from "@ionic/react";
-import {
-  bookOutline,
-  trendingUpOutline,
-  flameOutline,
-  addCircleOutline,
-  libraryOutline,
-} from "ionicons/icons";
+import { useState } from "react";
 import NoxOwl from "@/components/NoxOwl";
+import ContinueReading from "@/components/ContinueReading";
+import ReadingRituals, { Ritual } from "@/components/ReadingRituals";
+import StatsCards from "@/components/StatsCards";
+import WeeklyProgress from "@/components/WeeklyProgress";
+import QuickActions from "@/components/QuickActions";
+import NoxTip from "@/components/NoxTip";
 import "./Home.css";
 
 export default function Home() {
@@ -28,6 +27,56 @@ export default function Home() {
     weeklyProgress: 180,
   };
 
+  // Mock current reading data
+  const currentReading = {
+    title: "Atomic Habits",
+    author: "James Clear",
+    type: "Book",
+    progress: 65,
+    lastRead: "2 hours ago",
+    currentPage: "Chapter 12",
+    totalNotes: 8,
+  };
+
+  // Mock ritual data
+  const [rituals, setRituals] = useState<Ritual[]>([
+    {
+      id: 1,
+      name: "Morning Wisdom",
+      time: "07:00 AM",
+      duration: "15 min",
+      icon: "☀️",
+      description: "Start your day with inspiring reads",
+      isActive: true,
+    },
+    {
+      id: 2,
+      name: "Lunch Break Reading",
+      time: "12:30 PM",
+      duration: "20 min",
+      icon: "📚",
+      description: "Quick knowledge boost during lunch",
+      isActive: false,
+    },
+    {
+      id: 3,
+      name: "Evening Wind Down",
+      time: "09:00 PM",
+      duration: "30 min",
+      icon: "🌙",
+      description: "Relax with your favorite book",
+      isActive: true,
+    },
+  ]);
+
+  const handleRitualToggle = (id: number, checked: boolean) => {
+    setRituals(
+      rituals.map((ritual) =>
+        ritual.id === id ? { ...ritual, isActive: checked } : ritual
+      )
+    );
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -37,94 +86,47 @@ export default function Home() {
       </IonHeader>
 
       <IonContent fullscreen className="ion-padding">
-        {/* Nox's House Section */}
         <NoxOwl />
 
-        {/* Reading Statistics Dashboard */}
         <div className="stats-dashboard">
           <h2 className="section-title">Your Reading Journey</h2>
 
-          {/* Primary Stats Grid */}
-          <div className="primary-stats">
-            <div className="stat-card streak-card">
-              <div className="stat-icon">
-                <IonIcon icon={flameOutline} />
-              </div>
-              <div className="stat-content">
-                <div className="stat-value">{stats.readingStreak} Days</div>
-                <div className="stat-label">Reading Streak</div>
-              </div>
-            </div>
+          <ContinueReading
+            title={currentReading.title}
+            author={currentReading.author}
+            progress={currentReading.progress}
+            lastRead={currentReading.lastRead}
+            currentPage={currentReading.currentPage}
+            totalNotes={currentReading.totalNotes}
+            onContinue={() => console.log("Continue reading")}
+          />
 
-            <div className="stat-card notes-card">
-              <div className="stat-icon">
-                <IonIcon icon={bookOutline} />
-              </div>
-              <div className="stat-content">
-                <div className="stat-value">{stats.totalNotes}</div>
-                <div className="stat-label">Notes Saved</div>
-              </div>
-            </div>
-          </div>
+          <ReadingRituals
+            rituals={rituals}
+            onToggle={handleRitualToggle}
+            onManage={() => console.log("Manage rituals")}
+            onCreate={() => console.log("Create ritual")}
+          />
 
-          {/* Weekly Progress Card */}
-          <div className="progress-card">
-            <div className="progress-header">
-              <div className="progress-title">
-                <IonIcon icon={trendingUpOutline} />
-                <span>This Week</span>
-              </div>
-              <div className="progress-value">
-                {stats.weeklyProgress} / {stats.weeklyGoal} min
-              </div>
-            </div>
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{
-                  width: `${(stats.weeklyProgress / stats.weeklyGoal) * 100}%`,
-                }}
-              ></div>
-            </div>
-            <div className="progress-details">
-              <div className="detail-item">
-                <span className="detail-label">Today</span>
-                <span className="detail-value">{stats.todayMinutes} min</span>
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">New Notes</span>
-                <span className="detail-value">{stats.thisWeekNotes}</span>
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">Sources</span>
-                <span className="detail-value">{stats.sourcesCount}</span>
-              </div>
-            </div>
-          </div>
+          <StatsCards
+            readingStreak={stats.readingStreak}
+            totalNotes={stats.totalNotes}
+          />
 
-          {/* Quick Actions */}
-          <div className="quick-actions">
-            <button className="action-button primary">
-              <IonIcon icon={addCircleOutline} />
-              <span>Add Note</span>
-            </button>
-            <button className="action-button secondary">
-              <IonIcon icon={libraryOutline} />
-              <span>Add Source</span>
-            </button>
-          </div>
+          <WeeklyProgress
+            weeklyProgress={stats.weeklyProgress}
+            weeklyGoal={stats.weeklyGoal}
+            todayMinutes={stats.todayMinutes}
+            thisWeekNotes={stats.thisWeekNotes}
+            sourcesCount={stats.sourcesCount}
+          />
 
-          {/* Nox's Tip */}
-          <div className="nox-tip">
-            <div className="tip-icon">💡</div>
-            <div className="tip-content">
-              <div className="tip-title">Nox's Tip</div>
-              <div className="tip-text">
-                Reading before bed can improve sleep quality and reduce stress.
-                Try reading for 15 minutes tonight!
-              </div>
-            </div>
-          </div>
+          <QuickActions
+            onAddNote={() => console.log("Add note")}
+            onAddSource={() => console.log("Add source")}
+          />
+
+          <NoxTip tip="Reading before bed can improve sleep quality and reduce stress. Try reading for 15 minutes tonight!" />
         </div>
       </IonContent>
     </IonPage>

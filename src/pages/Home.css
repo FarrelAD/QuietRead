@@ -247,11 +247,11 @@
 }
 
 .streak-card .stat-icon {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+  background: var(--ion-color-warning);
 }
 
 .notes-card .stat-icon {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: var(--ion-color-primary);
 }
 
 .stat-icon {
@@ -312,7 +312,7 @@
 }
 
 .progress-title ion-icon {
-  color: #2dd36f;
+  color: var(--ion-color-success);
   font-size: 20px;
 }
 
@@ -336,7 +336,7 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #2dd36f 0%, #5be584 100%);
+  background: var(--ion-color-success);
   border-radius: 4px;
   transition: width 0.5s ease;
 }
@@ -392,13 +392,13 @@
 }
 
 .action-button.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
 }
 
 .action-button.secondary {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: #fff;
+  background: var(--ion-color-tertiary);
+  color: var(--ion-color-tertiary-contrast);
 }
 
 .action-button:active {
@@ -407,7 +407,8 @@
 
 /* Nox's Tip */
 .nox-tip {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: var(--ion-color-step-100);
+  border-left: 4px solid var(--ion-color-warning);
   border-radius: 16px;
   padding: 16px;
   display: flex;
@@ -438,6 +439,263 @@
   font-size: 12px;
   color: var(--ion-color-medium);
   line-height: 1.5;
+}
+
+/* Continue Reading Card */
+.continue-reading-card {
+  background: linear-gradient(135deg, var(--ion-color-secondary) 0%, var(--ion-color-secondary-shade) 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  color: var(--ion-color-secondary-contrast);
+  box-shadow: 0 4px 12px rgba(var(--ion-color-secondary-rgb), 0.3);
+}
+
+.continue-reading-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.continue-reading-card .header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.continue-reading-card .progress-badge {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.reading-content .book-info {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.reading-content .book-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.reading-content .book-details {
+  flex: 1;
+}
+
+.reading-content .book-title {
+  margin: 0 0 4px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.reading-content .book-author {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.reading-content .reading-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.reading-content .meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress-bar-container {
+  margin-bottom: 16px;
+}
+
+.progress-bar-container .progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-container .progress-fill {
+  height: 100%;
+  background: var(--ion-color-primary-contrast);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.continue-button {
+  width: 100%;
+  background: var(--ion-color-primary-contrast);
+  color: var(--ion-color-primary);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.continue-button:active {
+  transform: scale(0.98);
+}
+
+.continue-button:hover {
+  opacity: 0.9;
+}
+
+/* Reading Ritual Section */
+.ritual-section {
+  background: var(--ion-card-background);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+body.dark .ritual-section {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ritual-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.ritual-section .header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ritual-section .header-title h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ion-text-color);
+}
+
+.ritual-section .manage-button {
+  background: none;
+  border: none;
+  color: var(--ion-color-primary);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.ritual-section .manage-button:hover {
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+}
+
+.ritual-section .section-description {
+  margin: 0 0 20px 0;
+  color: var(--ion-color-medium);
+  font-size: 0.9rem;
+}
+
+.rituals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ritual-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--ion-color-step-50);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.ritual-card.active {
+  background: var(--ion-color-tertiary);
+  border-color: var(--ion-color-tertiary-shade);
+  color: var(--ion-color-tertiary-contrast);
+}
+
+.ritual-card .ritual-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.ritual-card .ritual-info {
+  flex: 1;
+}
+
+.ritual-card .ritual-name {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ion-text-color);
+}
+
+.ritual-card.active .ritual-name {
+  color: var(--ion-color-tertiary-contrast);
+}
+
+.ritual-card .ritual-description {
+  margin: 0 0 8px 0;
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+}
+
+.ritual-card.active .ritual-description {
+  color: var(--ion-color-tertiary-contrast);
+  opacity: 0.85;
+}
+
+.ritual-card .ritual-schedule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+}
+
+.ritual-card.active .ritual-schedule {
+  color: var(--ion-color-tertiary-contrast);
+  opacity: 0.9;
+}
+
+.ritual-card .schedule-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.ritual-card .ritual-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.ritual-card ion-toggle {
+  --handle-width: 22px;
+  --handle-height: 22px;
 }
 
 /* Animations */
@@ -497,4 +755,24 @@
   .message-text {
     font-size: 10px;
   }
+}
+
+.create-ritual-button {
+  --background: var(--ion-color-primary);
+  --background-hover: var(--ion-color-primary-shade);
+  --background-activated: var(--ion-color-primary-shade);
+  --color: var(--ion-color-primary-contrast);
+  --border-radius: 12px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  --box-shadow: none;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 0;
+  height: auto;
+  text-transform: none;
+}
+
+.create-ritual-button::part(native) {
+  padding: 12px 20px;
 }
