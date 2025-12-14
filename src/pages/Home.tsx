@@ -13,33 +13,10 @@ import {
   addCircleOutline,
   libraryOutline,
 } from "ionicons/icons";
-import { useState, useEffect } from "react";
-import noxCharacter from "@/assets/nox-character.png";
+import NoxOwl from "@/components/NoxOwl";
 import "./Home.css";
 
 export default function Home() {
-  const [greeting, setGreeting] = useState("");
-  const [noxMessage, setNoxMessage] = useState("");
-  const [showMessage, setShowMessage] = useState(true);
-
-  useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) {
-      setGreeting("Good Morning");
-      setNoxMessage("Ready to start your reading journey today?");
-    } else if (hour < 18) {
-      setGreeting("Good Afternoon");
-      setNoxMessage("Perfect time for some quiet reading...");
-    } else {
-      setGreeting("Good Evening");
-      setNoxMessage("Let's unwind with a good book tonight.");
-    }
-
-    // Show message again after 3 seconds
-    const timer = setTimeout(() => setShowMessage(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
   // Mock data - replace with actual data from database later
   const stats = {
     totalNotes: 25,
@@ -61,45 +38,7 @@ export default function Home() {
 
       <IonContent fullscreen className="ion-padding">
         {/* Nox's House Section */}
-        <div className="nox-house">
-          <div className="house-background">
-            <div className="moon">🌙</div>
-            <div className="stars">
-              <span className="star">✨</span>
-              <span className="star">✨</span>
-              <span className="star">✨</span>
-            </div>
-
-            {/* Nox Character */}
-            <div className="nox-container">
-              <img
-                src={noxCharacter}
-                alt="Nox the Owl"
-                className="nox-character"
-              />
-
-              {/* Speech Bubble */}
-              {showMessage && (
-                <div
-                  className="speech-bubble"
-                  onClick={() => setShowMessage(false)}
-                >
-                  <div className="greeting-text">{greeting}! 🦉</div>
-                  <div className="message-text">{noxMessage}</div>
-                </div>
-              )}
-            </div>
-
-            {/* Perch/Branch */}
-            <div className="perch"></div>
-          </div>
-
-          {/* Welcome Text */}
-          <div className="welcome-section">
-            <h1 className="welcome-title">Welcome to Your Reading Space</h1>
-            <p className="welcome-subtitle">Nox is here to guide your journey</p>
-          </div>
-        </div>
+        <NoxOwl />
 
         {/* Reading Statistics Dashboard */}
         <div className="stats-dashboard">
