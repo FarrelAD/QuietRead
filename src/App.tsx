@@ -53,22 +53,22 @@ export default function App() {
 
   useEffect(() => {
     // Load dark mode preference from localStorage
-    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    const savedDarkMode = localStorage.getItem("darkMode") === "true";
     setDarkMode(savedDarkMode);
     if (savedDarkMode) {
-      document.body.classList.add('dark');
+      document.body.classList.add("dark");
     }
   }, []);
 
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
-    localStorage.setItem('darkMode', String(newDarkMode));
-    
+    localStorage.setItem("darkMode", String(newDarkMode));
+
     if (newDarkMode) {
-      document.body.classList.add('dark');
+      document.body.classList.add("dark");
     } else {
-      document.body.classList.remove('dark');
+      document.body.classList.remove("dark");
     }
   };
 
