@@ -75,7 +75,7 @@ export default function App() {
   return (
     <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
       <IonApp>
-        <IonReactRouter>
+        <IonReactRouter basename="/QuietRead">
           <IonTabs>
             <IonRouterOutlet>
               <Route exact path="/home">
