@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "275778781608",
+    "project_id": "quiet-read",
+    "storage_bucket": "quiet-read.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275778781608:android:6d4a367033851f2124dd9d",
+        "android_client_info": {
+          "package_name": "io.github.farrelad.quietread"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxn2K2t0kpA6Tuzl3GOWQEPYdNKxwUSjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
