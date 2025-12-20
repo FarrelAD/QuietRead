@@ -16,10 +16,24 @@ export function MobileWrapper({ children }: {
   return (
     <div className="mobile-wrapper-container">
       <div
-        className="mobile-wrapper-frame"
+        className="mobile-wrapper-device"
         style={{ width: `${mobileWidth}px` }}
       >
-        {children}
+        {/* Device Frame */}
+        <div className="device-frame">
+          <div className="device-notch">
+            <div className="notch-camera"></div>
+            <div className="notch-speaker"></div>
+          </div>
+          
+          {/* App Content */}
+          <div className="mobile-wrapper-frame">
+            {children}
+          </div>
+          
+          {/* Home Indicator */}
+          <div className="device-home-indicator"></div>
+        </div>
       </div>
     </div>
   );
