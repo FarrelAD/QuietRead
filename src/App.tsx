@@ -39,6 +39,7 @@ import "./App.css";
 import Home from "./pages/Home";
 import ReadingNotes from "./pages/ReadingNotes";
 import Settings from "./pages/Settings";
+import { MobileWrapper, MobileWrapperHelper } from "./components/MobileWrapper";
 
 setupIonicReact();
 
@@ -72,7 +73,7 @@ export default function App() {
     }
   };
 
-  return (
+  const appContent = (
     <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
       <IonApp>
         <IonReactRouter basename="/QuietRead">
@@ -109,5 +110,11 @@ export default function App() {
         </IonReactRouter>
       </IonApp>
     </DarkModeContext.Provider>
+  );
+
+  return MobileWrapperHelper.shouldUseMobilePreview() ? (
+    <MobileWrapper>{appContent}</MobileWrapper>
+  ) : (
+    appContent
   );
 }
